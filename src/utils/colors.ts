@@ -1,0 +1,18 @@
+export const Colors = {
+    backgroundColor: '#EEF7FB',
+    primaryBlue: '#8ecae6' ,
+    lightBlue: '#affcf8',
+    secondaryBlue: '#219ebc',
+    primaryDarkBlue:'#023047',
+    primaryYellow: '#ffb703' ,
+    primaryOrange: '#fb8500',
+    darkBlue: '#68B9DE' ,
+    darkSecondaryBlue: '#18748B',
+    darkDarkestBlue:'#010D14',
+    darkYellow: '#CC9200' ,
+    darkOrange: '#CC6D00',
+    white: '#fff',
+    blackish: '#222',
+    shadowOrange: '#fb850050',
+    buttonOrange: '#fb850005s',
+}
