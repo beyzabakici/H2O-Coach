@@ -10,7 +10,7 @@ export enum SvgEnum {
   Remove = "remove-circle-outline",
   Settings = "settings-outline",
   Share = "share-social-outline",
-  Sip = "water-outline",
+  Intake = "water-outline",
   Scan = "scan-circle-outline",
   Close = "close-circle-outline",
   Info = "information-circle-outline",

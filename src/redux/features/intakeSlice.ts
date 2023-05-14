@@ -1,19 +1,19 @@
 import { PayloadAction, createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import {
   ProfileResponseType,
-  SipRequestType,
-  SipResponseType,
+  IntakeRequestType,
+  IntakeResponseType,
   getCurrentTime,
 } from "../../utils";
 import axios from "axios";
 import { BASE_URL } from "react-native-dotenv";
 
 const initialState: {
-  data: SipResponseType[];
+  data: IntakeResponseType[];
   profile: ProfileResponseType;
   error: string;
   loading: boolean;
-  todaySips: number;
+  todayIntakes: number;
 } = {
   data: [],
   profile: {
@@ -24,11 +24,11 @@ const initialState: {
   },
   error: "",
   loading: false,
-  todaySips: 0,
+  todayIntakes: 0,
 };
 
-export const fetchSips = createAsyncThunk("fetchSips", async () => {
-  const response = await axios.get<SipResponseType[]>(`${BASE_URL}intake`);
+export const fetchIntakes = createAsyncThunk("fetchIntakes", async () => {
+  const response = await axios.get<IntakeResponseType[]>(`${BASE_URL}intake`);
   return response.data;
 });
 
@@ -39,31 +39,31 @@ export const getGoals = createAsyncThunk("getGoals", async (id: string) => {
   return response.data;
 });
 
-export const addSip = async (sip: SipRequestType) =>
-  await axios.post(`${BASE_URL}intake`, {...sip
-} );
+export const addIntakeRequest = async (intake: IntakeRequestType) =>
+  await axios.post(`${BASE_URL}intake`, { ...intake });
 
-export const sipSlice = createSlice({
-  name: "sip",
+export const intakeSlice = createSlice({
+  name: "intake",
   initialState,
   extraReducers: (builder) => {
-    builder.addCase(fetchSips.pending, (state) => {
+    builder.addCase(fetchIntakes.pending, (state) => {
       state.loading = true;
       state.error = "";
     });
     builder.addCase(
-      fetchSips.fulfilled,
-      (state, action: PayloadAction<SipResponseType[]>) => {
+      fetchIntakes.fulfilled,
+      (state, action: PayloadAction<IntakeResponseType[]>) => {
         state.data = action.payload;
-        
-          action!.payload!.map((sip) => {
-            sip.createdAt.slice(0, 10) === getCurrentTime.slice(0, 10) ?
-              state.todaySips += Number(sip.amount): null
-          })
+
+        action!.payload!.map((intake) => {
+          intake.createdAt.slice(0, 10) === getCurrentTime.slice(0, 10)
+            ? (state.todayIntakes += Number(intake.amount))
+            : null;
+        });
         state.loading = false;
       }
     );
-    builder.addCase(fetchSips.rejected, (state) => {
+    builder.addCase(fetchIntakes.rejected, (state) => {
       state.loading = false;
       state.error = "An Unexpected Error";
     });
@@ -84,10 +84,11 @@ export const sipSlice = createSlice({
     });
   },
   reducers: {
-    add: (state, action: PayloadAction<SipResponseType>) => {
-      addSip(action.payload);
-      state.data.push(action.payload);
-      state.todaySips += Number(action.payload.amount);
+    addIntake: (state, action: PayloadAction<IntakeRequestType>) => {
+      addIntakeRequest(action.payload).then((resp) =>
+        state.data.push(resp.data)
+      );
+      state.todayIntakes += Number(action.payload.amount);
     },
     setProfile: (state, action: PayloadAction<ProfileResponseType>) => {
       state = {
@@ -95,15 +96,15 @@ export const sipSlice = createSlice({
         profile: action.payload,
       };
     },
-    remove: (state, action: PayloadAction<string>) => {
+    removeIntake: (state, action: PayloadAction<string>) => {
       state = {
         ...state,
-        data: state.data.filter((sip) => sip.id !== action.payload),
+        data: state.data.filter((intake) => intake.id !== action.payload),
       };
     },
   },
 });
 
-export const { add, setProfile, remove } = sipSlice.actions;
+export const { addIntake, setProfile, removeIntake } = intakeSlice.actions;
 
-export default sipSlice.reducer;
+export default intakeSlice.reducer;

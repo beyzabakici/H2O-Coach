@@ -1,1 +1,1 @@
-export {default as sipSlice } from './sipSlice'
+export {default as intakeSlice } from './intakeSlice'

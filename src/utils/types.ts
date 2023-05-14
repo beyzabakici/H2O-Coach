@@ -1,11 +1,11 @@
-export type SipResponseType = {
+export type IntakeResponseType = {
     id: string;
     amount: number;
     createdAt: string;
     unit: string;
 }
 
-export type SipRequestType = {
+export type IntakeRequestType = {
     amount: number;
     createdAt: string;
     unit: string;

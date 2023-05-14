@@ -1,10 +1,10 @@
 import { configureStore } from "@reduxjs/toolkit";
 import { TypedUseSelectorHook, useDispatch, useSelector } from "react-redux";
-import { sipSlice } from "./features";
+import { intakeSlice } from "./features";
 
 const store = configureStore({
   reducer: {
-    sips: sipSlice,
+    intakes: intakeSlice,
   },
 });
 

@@ -1,14 +1,14 @@
 import React from "react";
-import { FlatList, Text } from "react-native";
+import { FlatList } from "react-native";
 import H2OModal from "../../../../components/H2OModal";
-import { SipResponseType } from "../../../../utils";
+import { IntakeResponseType } from "../../../../utils";
 import { H2OCard } from "../../../../components";
 import styles from "./styles";
 
 type Props = {
   isVisible: boolean;
   setVisible: (...args: any[]) => void;
-  dayIntakes: SipResponseType[];
+  dayIntakes: IntakeResponseType[];
 };
 
 const DetailsModal: React.FC<Props> = ({
@@ -25,7 +25,7 @@ const DetailsModal: React.FC<Props> = ({
       <FlatList
         data={dayIntakes}
         renderItem={({ item }) => <H2OCard item={item} />}
-        keyExtractor={(item) => item.id}
+        keyExtractor={(item) => `intake-${item.id}`}
         contentContainerStyle={{
           flexGrow: 1,
         }}

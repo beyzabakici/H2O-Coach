@@ -9,13 +9,13 @@ import {
   Colors,
   LiquidUnit,
   MarkedDate,
-  SipRequestType,
-  SipResponseType,
+  IntakeRequestType,
+  IntakeResponseType,
   getCurrentTime,
 } from "../../utils";
-import { add, fetchSips } from "../../redux/features/sipSlice";
+import { addIntake, fetchIntakes, removeIntake } from "../../redux/features/intakeSlice";
 import H2OGoalBar from "../../components/H2OGoalBar";
-import { getGoals } from "../../redux/features/sipSlice";
+import { getGoals } from "../../redux/features/intakeSlice";
 import { DetailsModal, SettingsModal } from "../components";
 
 type Props = {
@@ -24,13 +24,13 @@ type Props = {
 };
 
 const HomeScreen: React.FC<Props> = ({ route, navigation }) => {
-  const { sips, error, loading, profile, todaySips } = useAppSelector(
+  const { intakes, error, loading, profile, todayIntakes } = useAppSelector(
     (state) => ({
-      sips: state.sips.data,
-      error: state.sips.error,
-      loading: state.sips.loading,
-      profile: state.sips.profile,
-      todaySips: state.sips.todaySips,
+      intakes: state.intakes.data,
+      error: state.intakes.error,
+      loading: state.intakes.loading,
+      profile: state.intakes.profile,
+      todayIntakes: state.intakes.todayIntakes,
     })
   );
   const [markedDates, setMarkedDates] = useState<Record<string, MarkedDate>>(
@@ -39,30 +39,29 @@ const HomeScreen: React.FC<Props> = ({ route, navigation }) => {
   const [detailsModalVisible, setDetailsModalVisible] =
     useState<boolean>(false);
   const [selectedDayIntakes, setSelectedDayIntakes] = useState<
-    SipResponseType[]
+    IntakeResponseType[]
   >([]);
 
   const dispatch = useAppDispatch();
-  const addSip = () => {
+  const addIntakeRequest = () => {
     const amount = 3200;
-    const newSip: SipRequestType = {
+    const newIntake: IntakeRequestType = {
       createdAt: getCurrentTime,
       amount: amount,
       unit: LiquidUnit.Milliliter,
     };
-    dispatch(add(newSip));
+    dispatch(addIntake(newIntake));
   };
 
   const deleteIntake = (id: string) => {
     dispatch(removeIntake(id))
   };
 
-  useEffect(() => {}, [route, navigation]);
   useEffect(() => {
-    dispatch(fetchSips()).then((resp: any) => {
+    dispatch(fetchIntakes()).then((resp: any) => {
       setMarkedDates(
         convertToMarkedDates(
-          resp.payload.map((day: SipResponseType) => day.createdAt)
+          resp.payload.map((day: IntakeResponseType) => day.createdAt)
         )
       );
     });
@@ -70,7 +69,7 @@ const HomeScreen: React.FC<Props> = ({ route, navigation }) => {
   }, []);
 
   const onDayPress = (selectedDay: any) => {
-    const selectedDays: SipResponseType[] = sips.filter(
+    const selectedDays: IntakeResponseType[] = intakes.filter(
       (day) => day.createdAt.slice(0, 10) === selectedDay.dateString && day
     );
     setSelectedDayIntakes(selectedDays);
@@ -106,7 +105,7 @@ const HomeScreen: React.FC<Props> = ({ route, navigation }) => {
       <StatusBar style="dark" />
       <View style={styles.goalArea}>
         <H2OGoalBar
-          amount={todaySips}
+          amount={todayIntakes}
           goal={profile.dailyGoal}
           unit={LiquidUnit.Milliliter}
         />
@@ -119,7 +118,7 @@ const HomeScreen: React.FC<Props> = ({ route, navigation }) => {
             iconStyle={styles.buttonIcon}
           />
           <H2OButton
-            onPress={addSip}
+            onPress={addIntakeRequest}
             rightText="Add"
             svg={SvgEnum.Add}
             style={styles.button}
