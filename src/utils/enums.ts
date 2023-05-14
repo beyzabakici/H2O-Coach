@@ -5,11 +5,13 @@ export enum LiquidUnit {
   Kiloliter = "kl",
 }
 
-export enum ButtonEnum {
+export enum SvgEnum {
   Add = "add-circle-outline",
-  Remove = 'remove-circle-outline',
-  Settings= 'settings-outline',
-  Share = 'share-social-outline',
-  Sip = 'water-outline',
-  Scan = 'scan-circle-outline',
+  Remove = "remove-circle-outline",
+  Settings = "settings-outline",
+  Share = "share-social-outline",
+  Sip = "water-outline",
+  Scan = "scan-circle-outline",
+  Close = "close-circle-outline",
+  Info = "information-circle-outline",
 }

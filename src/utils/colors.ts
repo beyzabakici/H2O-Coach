@@ -14,5 +14,6 @@ export const Colors = {
     white: '#fff',
     blackish: '#222',
     shadowOrange: '#fb850050',
+    shadowLightOrange: '#fb850025',
     buttonOrange: '#fb850005s',
 }

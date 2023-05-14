@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { ViewStyle, View, Text } from "react-native";
 import styles from "./styles";
 import { AnimatedCircularProgress } from "react-native-circular-progress";
@@ -8,33 +8,36 @@ type Props = {
   style?: ViewStyle;
   goal: number;
   amount: number;
-  unit: LiquidUnit
+  unit: LiquidUnit;
 };
 
 const H2OGoalBar: React.FC<Props> = ({ style, amount, goal, unit }) => {
+  const [progressPercent, setProgressPercent] = useState(1);
+
+  useEffect(() => {
+    setProgressPercent(Math.round((amount * 100) / goal));
+  }, [goal, amount]);
+
   return (
     <View style={{ ...styles.container, ...style }}>
-      <AnimatedCircularProgress
-        size={screenWidth * 0.6}
-        width={6}
-        fill={Math.round((amount * 100) / goal)}
-        tintColor={Colors.primaryBlue}
-        onAnimationComplete={() => console.log("onAnimationComplete")}
-        ref={null}
-        backgroundColor={Colors.primaryDarkBlue}
-        arcSweepAngle={360}
-      >
-        {(fill) => (
-          <View style={styles.childrenArea}>
-            <Text style={styles.points}>
-              {Math.round((amount * 100) / goal)}%
-            </Text>
-            <Text>
-              {amount} / {goal} {unit}
-            </Text>
-          </View>
-        )}
-      </AnimatedCircularProgress>
+      {progressPercent ? (
+        <AnimatedCircularProgress
+          size={screenWidth * 0.55}
+          width={6}
+          fill={progressPercent}
+          tintColor={Colors.primaryBlue}
+          backgroundColor={Colors.primaryDarkBlue}
+        >
+          {() => (
+            <View style={styles.childrenArea}>
+              <Text style={styles.points}>{progressPercent} %</Text>
+              <Text>
+                {amount} / {goal} {unit ?? LiquidUnit.Milliliter}
+              </Text>
+            </View>
+          )}
+        </AnimatedCircularProgress>
+      ): <></>}
     </View>
   );
 };

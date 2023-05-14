@@ -1,81 +1,138 @@
 import React, { useEffect, useState } from "react";
 import { StatusBar } from "expo-status-bar";
-import { Text, View, SafeAreaView } from "react-native";
+import { View, SafeAreaView } from "react-native";
 import styles from "./styles";
 import { H2OButton, H2OCalendar } from "../../components";
 import { useAppDispatch, useAppSelector } from "../../redux";
-import { ButtonEnum, LiquidUnit, SipResponseType } from "../../utils";
+import {
+  SvgEnum,
+  Colors,
+  LiquidUnit,
+  MarkedDate,
+  SipRequestType,
+  SipResponseType,
+  getCurrentTime,
+} from "../../utils";
 import { add, fetchSips } from "../../redux/features/sipSlice";
 import H2OGoalBar from "../../components/H2OGoalBar";
+import { getGoals } from "../../redux/features/sipSlice";
+import { SettingsModal } from "../components";
 
-const HomeScreen = () => {
-  const { sips, error, loading, profile } = useAppSelector((state) => ({
-    sips: state.sips.data,
-    error: state.sips.error,
-    loading: state.sips.loading,
-    profile: state.sips.profile,
-  }));
+type Props = {
+  route: any;
+  navigation: any;
+};
+
+const HomeScreen: React.FC<Props> = ({ route, navigation }) => {
+  const { sips, error, loading, profile, todaySips } = useAppSelector(
+    (state) => ({
+      sips: state.sips.data,
+      error: state.sips.error,
+      loading: state.sips.loading,
+      profile: state.sips.profile,
+      todaySips: state.sips.todaySips,
+    })
+  );
+  const [markedDates, setMarkedDates] = useState<Record<string, MarkedDate>>(
+    {}
+  );
+
   const dispatch = useAppDispatch();
   const addSip = () => {
-    const newSip: SipResponseType = {
-      createdAt: "2023-05-11T12:36:30.992Z",
-      amount: 666,
-      unit: "ml",
-      id: "",
+    const amount = 3200;
+    const newSip: SipRequestType = {
+      createdAt: getCurrentTime,
+      amount: amount,
+      unit: LiquidUnit.Milliliter,
     };
     dispatch(add(newSip));
   };
-
-  const onPressHandler = () => {
-    console.log("state", sips, error, loading, profile);
-  };
-
+  useEffect(() => {}, [route, navigation]);
   useEffect(() => {
-    dispatch(fetchSips());
+    dispatch(fetchSips()).then((resp: any) => {
+      setMarkedDates(
+        convertToMarkedDates(
+          resp.payload.map((day: SipResponseType) => day.createdAt)
+        )
+      );
+    });
+    dispatch(getGoals("1"));
   }, []);
-
-  const [markedDates, setMarkedDates] = useState({});
 
   const onDayPress = (day: any) => {
     const selectedDay = day.dateString;
-
-    // Seçili günün işaretlenmesi
     setMarkedDates({
       ...markedDates,
       [selectedDay]: {
         selected: true,
         marked: true,
-        dotColor: "red",
+        dotColor: Colors.primaryOrange,
       },
     });
+  };
+
+  function convertToMarkedDates(
+    timestamps: string[]
+  ): Record<string, MarkedDate> {
+    const datesObj: Record<string, MarkedDate> = {};
+
+    timestamps.forEach((timestamp) => {
+      const date = timestamp.slice(0, 10);
+
+      if (!datesObj[date]) {
+        datesObj[date] = {
+          dotColor: Colors.primaryOrange,
+          marked: true,
+          selected: true,
+        };
+      }
+    });
+
+    return datesObj;
+  }
+
+  const closeSettingsModal = () => {
+    navigation.setParams({ setttingsModalVisible: false });
   };
 
   return (
     <SafeAreaView style={styles.screenContainer}>
       <StatusBar style="dark" />
       <View style={styles.goalArea}>
-        <H2OGoalBar amount={400} goal={500} unit={LiquidUnit.Milliliter} />
+        <H2OGoalBar
+          amount={todaySips}
+          goal={profile.dailyGoal}
+          unit={LiquidUnit.Milliliter}
+        />
         <View style={styles.buttonArea}>
           <H2OButton
-            onPress={() => console.log("mbb")}
+            onPress={() => console.log("mbb", sips)}
             rightText="Remove"
-            svg={ButtonEnum.Remove}
+            svg={SvgEnum.Remove}
             style={styles.button}
+            iconStyle={styles.buttonIcon}
           />
           <H2OButton
-            onPress={() => console.log("mbb")}
+            onPress={addSip}
             rightText="Add"
-            svg={ButtonEnum.Add}
+            svg={SvgEnum.Add}
             style={styles.button}
+            iconStyle={styles.buttonIcon}
           />
         </View>
       </View>
       <View style={styles.container}>
         <H2OCalendar
           style={styles.calendar}
-          onDayPress={(e) => console.log(e)}
+          onDayPress={() => console.log(markedDates)}
+          markedDates={markedDates}
         />
       </View>
+      <SettingsModal
+        isVisible={route?.params?.setttingsModalVisible}
+        setVisible={closeSettingsModal}
+        profile={profile}
+      />
     </SafeAreaView>
   );
 };

@@ -1,5 +1,5 @@
 import { StyleSheet } from "react-native";
-import { Colors } from "../../utils";
+import { Colors, screenHeight, screenWidth } from "../../utils";
 
 const styles = StyleSheet.create({
   calendar: {

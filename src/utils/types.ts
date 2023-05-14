@@ -17,3 +17,9 @@ export type ProfileResponseType = {
     monthlyGoal: number;
     userId: string;
 }
+
+export type MarkedDate = {
+    selected: boolean,
+    marked: boolean,
+    dotColor: string,
+}

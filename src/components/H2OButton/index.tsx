@@ -1,14 +1,16 @@
 import React from "react";
 import styles from "./styles";
-import { Text, ViewStyle, TouchableOpacity } from "react-native";
+import { Text, ViewStyle, TouchableOpacity, TextStyle } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
-import { ButtonEnum } from "../../utils";
+import { SvgEnum } from "../../utils";
 
 type Props = {
   style?: ViewStyle;
   onPress: (...args: any[]) => void;
   rightText?: string;
-  svg?: ButtonEnum;
+  svg?: SvgEnum;
+  iconStyle?: ViewStyle | TextStyle;
+  textStyle?: TextStyle;
 };
 
 const H2OGoalBar: React.FC<Props> = ({
@@ -16,14 +18,18 @@ const H2OGoalBar: React.FC<Props> = ({
   onPress,
   rightText = "",
   svg = undefined,
+  iconStyle = {},
+  textStyle = {},
 }) => {
   return (
     <TouchableOpacity
       style={{ ...style, ...styles.container }}
       onPress={onPress}
     >
-      {svg && <Ionicons name={svg} style={styles.icon} />}
-      {rightText && <Text style={styles.text}>{rightText}</Text>}
+      {svg && <Ionicons name={svg} style={{ ...styles.icon, ...iconStyle }} />}
+      {rightText && (
+        <Text style={{ ...styles.text, ...textStyle }}>{rightText}</Text>
+      )}
     </TouchableOpacity>
   );
 };

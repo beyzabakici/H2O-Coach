@@ -13,6 +13,7 @@ const styles = StyleSheet.create({
     fontWeight: '400',
   },
   childrenArea: {
+    backgroundColor: Colors.backgroundColor,
     height: "100%",
     width: "100%",
     alignItems: "center",
