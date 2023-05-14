@@ -9,12 +9,14 @@ type Props = {
   isVisible: boolean;
   setVisible: (...args: any[]) => void;
   dayIntakes: IntakeResponseType[];
+  deleteIntake: (...args: any[]) => void;
 };
 
-const DetailsModal: React.FC<Props> = ({
+const RemoveModal: React.FC<Props> = ({
   isVisible,
   setVisible,
   dayIntakes,
+  deleteIntake,
 }) => {
   return (
     <H2OModal
@@ -25,13 +27,13 @@ const DetailsModal: React.FC<Props> = ({
       <FlatList
         data={dayIntakes}
         renderItem={({ item }) => (
-          <H2OCard item={item} />
+          <H2OCard item={item} deleteIntake={() => deleteIntake(item.id)} />
         )}
-        keyExtractor={(item) => `intake-${item.id}`}
+        keyExtractor={(item) => `delete-intake-${item.id}`}
         contentContainerStyle={styles.contentContainerStyle}
       />
     </H2OModal>
   );
 };
 
-export default DetailsModal;
+export default RemoveModal;

@@ -13,10 +13,14 @@ import {
   IntakeResponseType,
   getCurrentTime,
 } from "../../utils";
-import { addIntake, fetchIntakes, removeIntake } from "../../redux/features/intakeSlice";
+import {
+  addIntake,
+  fetchIntakes,
+  removeIntake,
+} from "../../redux/features/intakeSlice";
 import H2OGoalBar from "../../components/H2OGoalBar";
 import { getGoals } from "../../redux/features/intakeSlice";
-import { DetailsModal, SettingsModal } from "../components";
+import { DetailsModal, RemoveModal, SettingsModal } from "../components";
 
 type Props = {
   route: any;
@@ -38,6 +42,7 @@ const HomeScreen: React.FC<Props> = ({ route, navigation }) => {
   );
   const [detailsModalVisible, setDetailsModalVisible] =
     useState<boolean>(false);
+  const [removeModalVisible, setRemoveModalVisible] = useState<boolean>(false);
   const [selectedDayIntakes, setSelectedDayIntakes] = useState<
     IntakeResponseType[]
   >([]);
@@ -54,7 +59,7 @@ const HomeScreen: React.FC<Props> = ({ route, navigation }) => {
   };
 
   const deleteIntake = (id: string) => {
-    dispatch(removeIntake(id))
+    dispatch(removeIntake(id));
   };
 
   useEffect(() => {
@@ -100,6 +105,14 @@ const HomeScreen: React.FC<Props> = ({ route, navigation }) => {
     navigation.setParams({ setttingsModalVisible: false });
   };
 
+  const onPressRemoveButton = () => {
+    const selectedDays: IntakeResponseType[] = intakes.filter(
+      (day) => day.createdAt.slice(0, 10) === getCurrentTime.slice(0, 10) && day
+    );
+    setSelectedDayIntakes(selectedDays);
+    setRemoveModalVisible(!removeModalVisible);
+  };
+
   return (
     <SafeAreaView style={styles.screenContainer}>
       <StatusBar style="dark" />
@@ -111,7 +124,7 @@ const HomeScreen: React.FC<Props> = ({ route, navigation }) => {
         />
         <View style={styles.buttonArea}>
           <H2OButton
-            onPress={deleteIntake}
+            onPress={onPressRemoveButton}
             rightText="Remove"
             svg={SvgEnum.Remove}
             style={styles.button}
@@ -142,6 +155,12 @@ const HomeScreen: React.FC<Props> = ({ route, navigation }) => {
         isVisible={detailsModalVisible}
         setVisible={setDetailsModalVisible}
         dayIntakes={selectedDayIntakes}
+      />
+      <RemoveModal
+        isVisible={removeModalVisible}
+        setVisible={setRemoveModalVisible}
+        dayIntakes={selectedDayIntakes}
+        deleteIntake={deleteIntake}
       />
     </SafeAreaView>
   );

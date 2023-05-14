@@ -3,23 +3,23 @@ import { Colors } from "../../utils";
 
 const styles = StyleSheet.create({
   container: {
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    flexDirection: 'row',
-    padding:'5%',
-    marginHorizontal: '5%',
-    marginVertical: '2%',
+    alignItems: "center",
+    justifyContent: "space-between",
+    flexDirection: "row",
+    padding: "5%",
+    marginHorizontal: "5%",
+    marginVertical: "2%",
     borderRadius: 10,
     borderColor: Colors.primaryBlue,
     borderWidth: 2,
-    backgroundColor: Colors.shadowPrimaryBlue
+    backgroundColor: Colors.shadowPrimaryBlue,
   },
   title: {
     fontSize: 14,
-    fontWeight: 'bold',
-    alignSelf: 'center',
+    fontWeight: "bold",
+    alignSelf: "center",
     color: Colors.darkDarkestBlue,
-    paddingLeft: '1%'
+    paddingLeft: "1%",
   },
   icon: {
     fontSize: 20,
@@ -30,8 +30,8 @@ const styles = StyleSheet.create({
     color: Colors.primaryRed,
   },
   innerContainer: {
-    flexDirection: 'row',
-  }
+    flexDirection: "row",
+  },
 });
 
 export default styles;

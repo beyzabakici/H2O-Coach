@@ -42,6 +42,9 @@ export const getGoals = createAsyncThunk("getGoals", async (id: string) => {
 export const addIntakeRequest = async (intake: IntakeRequestType) =>
   await axios.post(`${BASE_URL}intake`, { ...intake });
 
+export const removeIntakeRequest = async (id: string) =>
+  await axios.delete(`${BASE_URL}intake${id}`);
+
 export const intakeSlice = createSlice({
   name: "intake",
   initialState,
@@ -85,9 +88,14 @@ export const intakeSlice = createSlice({
   },
   reducers: {
     addIntake: (state, action: PayloadAction<IntakeRequestType>) => {
-      addIntakeRequest(action.payload).then((resp) =>
-        state.data.push(resp.data)
-      );
+      addIntakeRequest(action.payload)
+        .then((resp) => state.data.push(resp.data))
+        .catch((err) => {
+          state = {
+            ...state,
+            error: err,
+          };
+        });
       state.todayIntakes += Number(action.payload.amount);
     },
     setProfile: (state, action: PayloadAction<ProfileResponseType>) => {
@@ -97,10 +105,19 @@ export const intakeSlice = createSlice({
       };
     },
     removeIntake: (state, action: PayloadAction<string>) => {
-      state = {
-        ...state,
-        data: state.data.filter((intake) => intake.id !== action.payload),
-      };
+      removeIntakeRequest(action.payload)
+        .then((resp) => {
+          state = {
+            ...state,
+            data: state.data.filter((intake) => intake.id === resp.data.id),
+          };
+        })
+        .catch((err) => {
+          state = {
+            ...state,
+            error: err,
+          };
+        });
     },
   },
 });

@@ -23,7 +23,11 @@ const H2OCard: React.FC<Props> = ({ style, item, deleteIntake }) => {
       </View>
       <Text style={styles.title}>{formatedDate}</Text>
       {deleteIntake && (
-        <H2OButton onPress={deleteIntake} iconStyle={styles.deleteIcon} />
+        <H2OButton
+          svg={SvgEnum.Remove}
+          onPress={deleteIntake}
+          iconStyle={styles.deleteIcon}
+        />
       )}
     </View>
   );
