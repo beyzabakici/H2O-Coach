@@ -18,7 +18,11 @@ const SettingsModal: React.FC<Props> = ({ isVisible, setVisible, profile }) => {
   const [monthlyGoal, setMonthlyGoal] = useState(profile!.monthlyGoal);
 
   return (
-    <H2OModal isVisible={isVisible} setVisible={setVisible}>
+    <H2OModal
+      isVisible={isVisible}
+      setVisible={setVisible}
+      style={styles.container}
+    >
       <H2OGoalInput
         title={"daily Goal"}
         currentValue={dailyGoal}

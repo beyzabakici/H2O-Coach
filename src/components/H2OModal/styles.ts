@@ -6,12 +6,15 @@ const styles = StyleSheet.create({
     flex:1
   },
   innerContainer: {
-    minHeight: '50%',
+    maxHeight: '60%',
+    minHeight: '20%',
     backgroundColor: Colors.white,
     borderRadius: 16,
   },
   closeButton: {
     alignSelf: 'flex-end',
+    paddingRight: '2%',
+    paddingTop: '2%'
   }
 });
 

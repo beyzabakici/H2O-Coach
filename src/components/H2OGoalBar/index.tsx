@@ -13,14 +13,13 @@ type Props = {
 
 const H2OGoalBar: React.FC<Props> = ({ style, amount, goal, unit }) => {
   const [progressPercent, setProgressPercent] = useState(1);
-
   useEffect(() => {
     setProgressPercent(Math.round((amount * 100) / goal));
   }, [goal, amount]);
 
   return (
     <View style={{ ...styles.container, ...style }}>
-      {progressPercent ? (
+      {progressPercent || progressPercent === 0 ? (
         <AnimatedCircularProgress
           size={screenWidth * 0.55}
           width={6}
@@ -37,7 +36,9 @@ const H2OGoalBar: React.FC<Props> = ({ style, amount, goal, unit }) => {
             </View>
           )}
         </AnimatedCircularProgress>
-      ): <></>}
+      ) : (
+        <></>
+      )}
     </View>
   );
 };

@@ -16,7 +16,7 @@ import {
 import { add, fetchSips } from "../../redux/features/sipSlice";
 import H2OGoalBar from "../../components/H2OGoalBar";
 import { getGoals } from "../../redux/features/sipSlice";
-import { SettingsModal } from "../components";
+import { DetailsModal, SettingsModal } from "../components";
 
 type Props = {
   route: any;
@@ -36,6 +36,11 @@ const HomeScreen: React.FC<Props> = ({ route, navigation }) => {
   const [markedDates, setMarkedDates] = useState<Record<string, MarkedDate>>(
     {}
   );
+  const [detailsModalVisible, setDetailsModalVisible] =
+    useState<boolean>(false);
+  const [selectedDayIntakes, setSelectedDayIntakes] = useState<
+    SipResponseType[]
+  >([]);
 
   const dispatch = useAppDispatch();
   const addSip = () => {
@@ -47,6 +52,11 @@ const HomeScreen: React.FC<Props> = ({ route, navigation }) => {
     };
     dispatch(add(newSip));
   };
+
+  const deleteIntake = (id: string) => {
+    dispatch(removeIntake(id))
+  };
+
   useEffect(() => {}, [route, navigation]);
   useEffect(() => {
     dispatch(fetchSips()).then((resp: any) => {
@@ -59,16 +69,12 @@ const HomeScreen: React.FC<Props> = ({ route, navigation }) => {
     dispatch(getGoals("1"));
   }, []);
 
-  const onDayPress = (day: any) => {
-    const selectedDay = day.dateString;
-    setMarkedDates({
-      ...markedDates,
-      [selectedDay]: {
-        selected: true,
-        marked: true,
-        dotColor: Colors.primaryOrange,
-      },
-    });
+  const onDayPress = (selectedDay: any) => {
+    const selectedDays: SipResponseType[] = sips.filter(
+      (day) => day.createdAt.slice(0, 10) === selectedDay.dateString && day
+    );
+    setSelectedDayIntakes(selectedDays);
+    setDetailsModalVisible(true);
   };
 
   function convertToMarkedDates(
@@ -106,7 +112,7 @@ const HomeScreen: React.FC<Props> = ({ route, navigation }) => {
         />
         <View style={styles.buttonArea}>
           <H2OButton
-            onPress={() => console.log("mbb", sips)}
+            onPress={deleteIntake}
             rightText="Remove"
             svg={SvgEnum.Remove}
             style={styles.button}
@@ -124,7 +130,7 @@ const HomeScreen: React.FC<Props> = ({ route, navigation }) => {
       <View style={styles.container}>
         <H2OCalendar
           style={styles.calendar}
-          onDayPress={() => console.log(markedDates)}
+          onDayPress={onDayPress}
           markedDates={markedDates}
         />
       </View>
@@ -132,6 +138,11 @@ const HomeScreen: React.FC<Props> = ({ route, navigation }) => {
         isVisible={route?.params?.setttingsModalVisible}
         setVisible={closeSettingsModal}
         profile={profile}
+      />
+      <DetailsModal
+        isVisible={detailsModalVisible}
+        setVisible={setDetailsModalVisible}
+        dayIntakes={selectedDayIntakes}
       />
     </SafeAreaView>
   );

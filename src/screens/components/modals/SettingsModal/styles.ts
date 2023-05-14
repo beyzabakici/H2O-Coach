@@ -1,7 +1,10 @@
-import { Button, StyleSheet } from "react-native";
+import { StyleSheet } from "react-native";
 import { Colors } from "../../../../utils";
 
 const styles = StyleSheet.create({
+  container: {
+    paddingBottom: "8%",
+  },
   icon: {
     fontSize: 20,
     color: Colors.primaryOrange,
@@ -10,32 +13,32 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     backgroundColor: Colors.shadowLightOrange,
     marginHorizontal: "30%",
-    paddingVertical: '1%',
+    paddingVertical: "1%",
     borderRadius: 5,
     alignItems: "center",
     justifyContent: "center",
   },
   text: {
-    paddingLeft: '2%',
+    paddingLeft: "2%",
     fontSize: 14,
-    fontWeight: 'bold',
-    alignSelf: 'center',
+    fontWeight: "bold",
+    alignSelf: "center",
   },
   button: {
     backgroundColor: Colors.shadowLightOrange,
     borderColor: Colors.shadowOrange,
     borderWidth: 2,
     borderRadius: 10,
-    alignSelf: 'center',
-    justifyContent: 'center',
-    paddingHorizontal: '5%',
-    paddingVertical: '1%',
-    marginTop: '10%'
+    alignSelf: "center",
+    justifyContent: "center",
+    paddingHorizontal: "5%",
+    paddingVertical: "1%",
+    marginTop: "5%",
   },
   buttonText: {
     fontSize: 18,
-    color: Colors.primaryOrange
-  }
+    color: Colors.primaryOrange,
+  },
 });
 
 export default styles;

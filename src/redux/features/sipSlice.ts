@@ -60,7 +60,6 @@ export const sipSlice = createSlice({
             sip.createdAt.slice(0, 10) === getCurrentTime.slice(0, 10) ?
               state.todaySips += Number(sip.amount): null
           })
-          console.log(">>>", state.todaySips);
         state.loading = false;
       }
     );

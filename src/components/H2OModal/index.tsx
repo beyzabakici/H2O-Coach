@@ -28,7 +28,6 @@ const H2OModal: React.FC<Props> = ({
     <Modal
       isVisible={isVisible}
       onSwipeComplete={closeModal}
-      swipeDirection={["down"]}
       propagateSwipe={true}
       style={styles.container}
       onBackdropPress={closeModal}
