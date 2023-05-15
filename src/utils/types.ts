@@ -1,14 +1,16 @@
+import { LiquidUnit } from "./enums";
+
 export type IntakeResponseType = {
     id: string;
     amount: number;
     createdAt: string;
-    unit: string;
+    unit: LiquidUnit;
 }
 
 export type IntakeRequestType = {
     amount: number;
     createdAt: string;
-    unit: string;
+    unit: LiquidUnit;
 }
 
 export type ProfileResponseType = {

@@ -20,7 +20,12 @@ import {
 } from "../../redux/features/intakeSlice";
 import H2OGoalBar from "../../components/H2OGoalBar";
 import { getGoals } from "../../redux/features/intakeSlice";
-import { DetailsModal, RemoveModal, SettingsModal } from "../components";
+import {
+  AddModal,
+  DetailsModal,
+  RemoveModal,
+  SettingsModal,
+} from "../components";
 
 type Props = {
   route: any;
@@ -43,19 +48,15 @@ const HomeScreen: React.FC<Props> = ({ route, navigation }) => {
   const [detailsModalVisible, setDetailsModalVisible] =
     useState<boolean>(false);
   const [removeModalVisible, setRemoveModalVisible] = useState<boolean>(false);
+  const [addModalVisible, setAddModalVisible] = useState<boolean>(false);
   const [selectedDayIntakes, setSelectedDayIntakes] = useState<
     IntakeResponseType[]
   >([]);
 
   const dispatch = useAppDispatch();
-  const addIntakeRequest = () => {
-    const amount = 3200;
-    const newIntake: IntakeRequestType = {
-      createdAt: getCurrentTime,
-      amount: amount,
-      unit: LiquidUnit.Milliliter,
-    };
-    dispatch(addIntake(newIntake));
+
+  const addIntakeRequest = (intake: IntakeRequestType) => {
+    dispatch(addIntake(intake));
   };
 
   const deleteIntake = (id: string) => {
@@ -112,6 +113,9 @@ const HomeScreen: React.FC<Props> = ({ route, navigation }) => {
     setSelectedDayIntakes(selectedDays);
     setRemoveModalVisible(!removeModalVisible);
   };
+  const onPressAddButton = () => {
+    setAddModalVisible(!addModalVisible);
+  };
 
   return (
     <SafeAreaView style={styles.screenContainer}>
@@ -131,7 +135,7 @@ const HomeScreen: React.FC<Props> = ({ route, navigation }) => {
             iconStyle={styles.buttonIcon}
           />
           <H2OButton
-            onPress={addIntakeRequest}
+            onPress={onPressAddButton}
             rightText="Add"
             svg={SvgEnum.Add}
             style={styles.button}
@@ -161,6 +165,11 @@ const HomeScreen: React.FC<Props> = ({ route, navigation }) => {
         setVisible={setRemoveModalVisible}
         dayIntakes={selectedDayIntakes}
         deleteIntake={deleteIntake}
+      />
+      <AddModal
+        isVisible={addModalVisible}
+        setVisible={setAddModalVisible}
+        addIntake={addIntakeRequest}
       />
     </SafeAreaView>
   );

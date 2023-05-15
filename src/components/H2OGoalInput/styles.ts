@@ -27,7 +27,7 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     alignSelf: 'center',
     paddingBottom: '2%',
-    color: Colors.primaryOrange
+    color: Colors.primaryOrange,
   },
   textInput: {
     width: '50%',

@@ -1,25 +1,35 @@
 import React, { useState } from "react";
-import { View, Text, TextInput } from "react-native";
+import { View, Text, TextInput, ViewStyle } from "react-native";
 import styles from "./styles";
-import H2OButton  from "../H2OButton";
+import H2OButton from "../H2OButton";
 import { SvgEnum, LiquidUnit } from "../../utils";
 
-type Props = {
+interface Props {
   title: string;
   currentValue: number;
-  setValue: (...args: any[]) => void;
-};
+  setCurrentValue: React.Dispatch<React.SetStateAction<number>>;
+  style?: ViewStyle;
+  unit?: LiquidUnit;
+}
 
-const H2OGoalInput: React.FC<Props> = ({ title, currentValue }) => {
-  const [value, setValue] = useState<number>(currentValue);
-  const increaseValue = () => {
-    setValue(value + 1);
+const H2OGoalInput: React.FC<Props> = ({
+  title,
+  currentValue,
+  setCurrentValue,
+  style,
+  unit = LiquidUnit.Milliliter,
+}) => {
+  const increaseValue = () => setCurrentValue(currentValue + 1);
+  const reduceValue = () => setCurrentValue(currentValue - 1);
+
+  const handleValueChange = (value: string) => {
+    if (/^\d+$/.test(value)) {
+      setCurrentValue(parseInt(value));
+    }
   };
-  const reduceValue = () => {
-    setValue(value - 1);
-  };
+
   return (
-    <View style={styles.container}>
+    <View testID="H2OGoalInput" style={[styles.container, style]}>
       <Text style={styles.title}>{title}</Text>
       <View style={styles.innerContainer}>
         <H2OButton
@@ -30,12 +40,12 @@ const H2OGoalInput: React.FC<Props> = ({ title, currentValue }) => {
         <View style={styles.textArea}>
           <TextInput
             style={styles.textInput}
-            onChangeText={(value) => setValue(parseInt(value))}
-            value={value.toString()}
+            onChangeText={handleValueChange}
+            value={currentValue.toString()}
             keyboardType="numeric"
-            placeholder={value.toString()}
+            placeholder={currentValue.toString()}
           />
-          <Text style={styles.unitText}>{LiquidUnit.Milliliter}</Text>
+          <Text style={styles.unitText}>{unit}</Text>
         </View>
         <H2OButton
           style={styles.addButton}

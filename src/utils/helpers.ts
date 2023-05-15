@@ -1,9 +1,22 @@
 import { Dimensions } from "react-native";
-import moment from 'moment-timezone';
+import moment from "moment-timezone";
+import { LiquidUnit } from "./enums";
 
 const screenWidth = Dimensions.get("window").width;
 const screenHeight = Dimensions.get("window").height;
 
 const getCurrentTime = moment().format();
 
-export { screenWidth, screenHeight, getCurrentTime };
+const getIntakeAsMilliliters = (amount: number, unit: LiquidUnit): number => {
+    const conversionFactors = {
+      [LiquidUnit.Kiloliter]: 1000000,
+      [LiquidUnit.Liter]: 1000,
+      [LiquidUnit.Centiliter]: 100,
+      [LiquidUnit.Milliliter]: 1
+    };
+  
+    const conversionFactor = conversionFactors[unit] ?? 1;
+    return amount * conversionFactor;
+  };
+
+export { screenWidth, screenHeight, getCurrentTime, getIntakeAsMilliliters };

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { View, Text } from "react-native";
 import H2OModal from "../../../../components/H2OModal";
 import { ProfileResponseType, SvgEnum } from "../../../../utils";
@@ -26,17 +26,17 @@ const SettingsModal: React.FC<Props> = ({ isVisible, setVisible, profile }) => {
       <H2OGoalInput
         title={"daily Goal"}
         currentValue={dailyGoal}
-        setValue={setDailyGoal}
+        setCurrentValue={setDailyGoal}
       />
       <H2OGoalInput
         title={"weekly Goal"}
         currentValue={weeklyGoal}
-        setValue={setWeeklyGoal}
+        setCurrentValue={setWeeklyGoal}
       />
       <H2OGoalInput
         title={"monthly Goal"}
         currentValue={monthlyGoal}
-        setValue={setMonthlyGoal}
+        setCurrentValue={setMonthlyGoal}
       />
       <View style={styles.infoArea}>
         <Ionicons name={SvgEnum.Info} style={styles.icon} />

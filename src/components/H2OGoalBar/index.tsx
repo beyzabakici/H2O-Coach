@@ -1,44 +1,39 @@
-import React, { useEffect, useState } from "react";
-import { ViewStyle, View, Text } from "react-native";
-import styles from "./styles";
+import React, { useEffect, useMemo } from "react";
+import { View, Text, StyleProp, ViewStyle } from "react-native";
 import { AnimatedCircularProgress } from "react-native-circular-progress";
 import { Colors, LiquidUnit, screenWidth } from "../../utils";
+import styles from "./styles";
 
 type Props = {
-  style?: ViewStyle;
+  style?: StyleProp<ViewStyle>;
   goal: number;
   amount: number;
-  unit: LiquidUnit;
+  unit?: LiquidUnit;
 };
 
-const H2OGoalBar: React.FC<Props> = ({ style, amount, goal, unit }) => {
-  const [progressPercent, setProgressPercent] = useState(1);
+const H2OGoalBar: React.FC<Props> = ({ style, amount, goal, unit = LiquidUnit.Milliliter }) => {
+  const progressPercent = useMemo(() => Math.round((amount * 100) / goal), [goal, amount]);
+
   useEffect(() => {
-    setProgressPercent(Math.round((amount * 100) / goal));
-  }, [goal, amount]);
+    // Perform any side effects related to progress percent changes here
+  }, [progressPercent]);
 
   return (
-    <View style={{ ...styles.container, ...style }}>
-      {progressPercent || progressPercent === 0 ? (
-        <AnimatedCircularProgress
-          size={screenWidth * 0.55}
-          width={6}
-          fill={progressPercent}
-          tintColor={Colors.primaryBlue}
-          backgroundColor={Colors.primaryDarkBlue}
-        >
-          {() => (
-            <View style={styles.childrenArea}>
-              <Text style={styles.points}>{progressPercent} %</Text>
-              <Text>
-                {amount} / {goal} {unit ?? LiquidUnit.Milliliter}
-              </Text>
-            </View>
-          )}
-        </AnimatedCircularProgress>
-      ) : (
-        <></>
-      )}
+    <View style={[styles.container, style]}>
+      <AnimatedCircularProgress
+        size={screenWidth * 0.55}
+        width={6}
+        fill={progressPercent}
+        tintColor={Colors.primaryBlue}
+        backgroundColor={Colors.primaryDarkBlue}
+      >
+        {() => (
+          <View style={styles.childrenArea}>
+            <Text style={styles.points}>{progressPercent} %</Text>
+            <Text>{amount} / {goal} {unit}</Text>
+          </View>
+        )}
+      </AnimatedCircularProgress>
     </View>
   );
 };

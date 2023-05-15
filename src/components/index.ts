@@ -3,3 +3,4 @@ export { default as H2OGoalBar } from "./H2OGoalBar";
 export { default as H2OButton } from "./H2OButton";
 export { default as H2OGoalInput } from "./H2OGoalInput";
 export { default as H2OCard } from "./H2OCard";
+export { default as H2OUnitInput } from "./H2OUnitInput";
