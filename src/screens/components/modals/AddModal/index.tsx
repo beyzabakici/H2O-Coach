@@ -30,6 +30,7 @@ const AddModal: React.FC<Props> = ({ isVisible, setVisible, addIntake }) => {
       amount: getIntakeAsMilliliters(intake.amount, intake.unit).toString(),
       unit: LiquidUnit.Milliliter,
     });
+    setIntake({ ...intake, amount: 0, unit: LiquidUnit.Milliliter });
     setVisible(!isVisible);
   };
   return (
@@ -41,7 +42,9 @@ const AddModal: React.FC<Props> = ({ isVisible, setVisible, addIntake }) => {
       <H2OGoalInput
         title={"amount"}
         currentValue={intake.amount}
-        setCurrentValue={(value: any) => setIntake({ ...intake, amount: value })}
+        setCurrentValue={(value: any) =>
+          setIntake({ ...intake, amount: value })
+        }
         unit={intake.unit}
       />
       <Text style={styles.title}>Unit</Text>

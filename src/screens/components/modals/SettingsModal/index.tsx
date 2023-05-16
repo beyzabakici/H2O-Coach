@@ -30,6 +30,11 @@ const SettingsModal: React.FC<Props> = ({
     setGoals(profile);
   }, [profile]);
 
+  const handleButton = () => {
+    onSavePress(goals);
+    setVisible(false);
+  };
+
   return (
     <H2OModal
       isVisible={isVisible}
@@ -60,7 +65,7 @@ const SettingsModal: React.FC<Props> = ({
         style={styles.button}
         rightText="save"
         textStyle={styles.buttonText}
-        onPress={() =>onSavePress(goals)}
+        onPress={handleButton}
       />
     </H2OModal>
   );
