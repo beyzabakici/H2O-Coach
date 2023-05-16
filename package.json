@@ -26,6 +26,7 @@
     "expo": "~48.0.15",
     "expo-status-bar": "~1.4.4",
     "expo-system-ui": "^2.2.1",
+    "expo-updates": "~0.16.4",
     "fs": "^0.0.1-security",
     "moment": "^2.29.4",
     "moment-timezone": "^0.5.43",
