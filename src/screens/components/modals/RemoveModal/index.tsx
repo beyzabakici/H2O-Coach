@@ -18,6 +18,11 @@ const RemoveModal: React.FC<Props> = ({
   dayIntakes,
   deleteIntake,
 }) => {
+  const handleButtonPress = (id: string) => {
+    deleteIntake(id);
+    setVisible(false);
+  };
+
   return (
     <H2OModal
       isVisible={isVisible}
@@ -27,7 +32,10 @@ const RemoveModal: React.FC<Props> = ({
       <FlatList
         data={dayIntakes}
         renderItem={({ item }) => (
-          <H2OCard item={item} deleteIntake={() => deleteIntake(item.id)} />
+          <H2OCard
+            item={item}
+            deleteIntake={() => handleButtonPress(item.id)}
+          />
         )}
         keyExtractor={(item) => `delete-intake-${item.id}`}
         contentContainerStyle={styles.contentContainerStyle}

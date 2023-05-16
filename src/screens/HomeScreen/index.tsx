@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { StatusBar } from "expo-status-bar";
 import { View, SafeAreaView } from "react-native";
 import styles from "./styles";
@@ -12,14 +12,15 @@ import {
   IntakeRequestType,
   IntakeResponseType,
   getCurrentTime,
+  ProfileResponseType,
 } from "../../utils";
 import {
   addIntake,
   fetchIntakes,
   removeIntake,
+  getGoals,
 } from "../../redux/features/intakeSlice";
 import H2OGoalBar from "../../components/H2OGoalBar";
-import { getGoals } from "../../redux/features/intakeSlice";
 import {
   AddModal,
   DetailsModal,
@@ -52,6 +53,7 @@ const HomeScreen: React.FC<Props> = ({ route, navigation }) => {
   const [selectedDayIntakes, setSelectedDayIntakes] = useState<
     IntakeResponseType[]
   >([]);
+  const [goals, setGoals] = useState<ProfileResponseType>(profile);
 
   const dispatch = useAppDispatch();
 
@@ -63,15 +65,19 @@ const HomeScreen: React.FC<Props> = ({ route, navigation }) => {
     dispatch(removeIntake(id));
   };
 
+  const handleMarkedDates = () => {
+    setMarkedDates(
+      convertToMarkedDates(
+        intakes.map((day: IntakeResponseType) => day.createdAt)
+      )
+    );
+  };
+
   useEffect(() => {
-    dispatch(fetchIntakes()).then((resp: any) => {
-      setMarkedDates(
-        convertToMarkedDates(
-          resp.payload.map((day: IntakeResponseType) => day.createdAt)
-        )
-      );
-    });
+    dispatch(fetchIntakes());
+    intakes && handleMarkedDates();
     dispatch(getGoals("1"));
+    profile && setGoals(profile);
   }, []);
 
   const onDayPress = (selectedDay: any) => {
@@ -123,7 +129,7 @@ const HomeScreen: React.FC<Props> = ({ route, navigation }) => {
       <View style={styles.goalArea}>
         <H2OGoalBar
           amount={todayIntakes}
-          goal={profile.dailyGoal}
+          goal={goals.dailyGoal}
           unit={LiquidUnit.Milliliter}
         />
         <View style={styles.buttonArea}>
@@ -153,7 +159,7 @@ const HomeScreen: React.FC<Props> = ({ route, navigation }) => {
       <SettingsModal
         isVisible={route?.params?.setttingsModalVisible}
         setVisible={closeSettingsModal}
-        profile={profile}
+        profile={goals}
       />
       <DetailsModal
         isVisible={detailsModalVisible}

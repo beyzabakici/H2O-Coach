@@ -12,11 +12,6 @@ const styles = StyleSheet.create({
     borderColor: Colors.shadowOrange,
     backgroundColor: Colors.buttonOrange,
     borderRadius: 25,
-    shadowColor: Colors.shadowOrange,
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 2,
-    shadowRadius: 1,
-    elevation: 4,
     marginLeft: '2%',
   },
   buttonIcon: {

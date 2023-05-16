@@ -4,6 +4,7 @@ import {
   IntakeRequestType,
   IntakeResponseType,
   getCurrentTime,
+  convertedTimestamp,
 } from "../../utils";
 import axios from "axios";
 import { BASE_URL } from "react-native-dotenv";
@@ -27,27 +28,53 @@ const initialState: {
   todayIntakes: 0,
 };
 
-export const fetchIntakes = createAsyncThunk("fetchIntakes", async () => {
-  const response = await axios.get<IntakeResponseType[]>(`${BASE_URL}intake`);
-  return response.data;
-});
+export const fetchIntakes = createAsyncThunk(
+  "intake/fetchIntakes",
+  async () => {
+    const response = await axios.get<IntakeResponseType[]>(`${BASE_URL}intake`);
+    return response.data;
+  }
+);
 
-export const getGoals = createAsyncThunk("getGoals", async (id: string) => {
-  const response = await axios.get<ProfileResponseType>(
-    `${BASE_URL}/goal/${id}`
-  );
-  return response.data;
-});
+export const getGoals = createAsyncThunk(
+  "intake/getGoals",
+  async (id: string) => {
+    const response = await axios.get<ProfileResponseType>(
+      `${BASE_URL}/goal/${id}`
+    );
+    return response.data;
+  }
+);
 
-export const addIntakeRequest = async (intake: IntakeRequestType) =>
-  await axios.post(`${BASE_URL}intake`, { ...intake });
+export const addIntake = createAsyncThunk(
+  "intake/addIntake",
+  async (intake: IntakeRequestType) => {
+    const response = await axios.post<IntakeResponseType>(`${BASE_URL}intake`, {
+      ...intake,
+    });
+    return response.data;
+  }
+);
 
-export const removeIntakeRequest = async (id: string) =>
-  await axios.delete(`${BASE_URL}intake${id}`);
+export const removeIntake = createAsyncThunk(
+  "intake/removeIntake",
+  async (id: string) => {
+    await axios.delete(`${BASE_URL}intake/${id}`);
+    return id;
+  }
+);
 
-export const intakeSlice = createSlice({
+const intakeSlice = createSlice({
   name: "intake",
   initialState,
+  reducers: {
+    setProfile: (state, action: PayloadAction<ProfileResponseType>) => {
+      state = {
+        ...state,
+        profile: action.payload,
+      };
+    },
+  },
   extraReducers: (builder) => {
     builder.addCase(fetchIntakes.pending, (state) => {
       state.loading = true;
@@ -56,14 +83,20 @@ export const intakeSlice = createSlice({
     builder.addCase(
       fetchIntakes.fulfilled,
       (state, action: PayloadAction<IntakeResponseType[]>) => {
-        state.data = action.payload;
-
-        action!.payload!.map((intake) => {
-          intake.createdAt.slice(0, 10) === getCurrentTime.slice(0, 10)
-            ? (state.todayIntakes += Number(intake.amount))
-            : null;
-        });
-        state.loading = false;
+        const currentTimestamp = convertedTimestamp(getCurrentTime);
+        const filteredIntakes = action.payload.filter(
+          (intake) => convertedTimestamp(intake.createdAt) === currentTimestamp
+        );
+        const todayIntakes = filteredIntakes.reduce(
+          (total, intake) => total + Number(intake.amount),
+          0
+        );
+        return {
+          ...state,
+          data: action.payload,
+          todayIntakes,
+          loading: false,
+        };
       }
     );
     builder.addCase(fetchIntakes.rejected, (state) => {
@@ -74,54 +107,54 @@ export const intakeSlice = createSlice({
       state.loading = true;
       state.error = "";
     });
-    builder.addCase(
-      getGoals.fulfilled,
-      (state, action: PayloadAction<ProfileResponseType>) => {
-        state.profile = action.payload;
-        state.loading = false;
-      }
-    );
+    builder.addCase(getGoals.fulfilled, (state, action) => {
+      return {
+        ...state,
+        profile: action.payload,
+        loading: false,
+      };
+    });
     builder.addCase(getGoals.rejected, (state) => {
       state.loading = false;
       state.error = "An Unexpected Error";
     });
-  },
-  reducers: {
-    addIntake: (state, action: PayloadAction<IntakeRequestType>) => {
-      addIntakeRequest(action.payload)
-        .then((resp) => state.data.push(resp.data))
-        .catch((err) => {
-          state = {
-            ...state,
-            error: err,
-          };
-        });
-      state.todayIntakes += Number(action.payload.amount);
-    },
-    setProfile: (state, action: PayloadAction<ProfileResponseType>) => {
-      state = {
+    builder.addCase(addIntake.pending, (state) => {
+      state.loading = true;
+      state.error = "";
+    });
+    builder.addCase(addIntake.fulfilled, (state, action) => {
+      const newIntake = action.payload;
+      const updatedData = [...state.data, newIntake];
+      const updatedTodayIntakes = state.todayIntakes + Number(newIntake.amount);
+      return {
         ...state,
-        profile: action.payload,
+        data: updatedData,
+        todayIntakes: updatedTodayIntakes,
+        loading: false,
       };
-    },
-    removeIntake: (state, action: PayloadAction<string>) => {
-      removeIntakeRequest(action.payload)
-        .then((resp) => {
-          state = {
-            ...state,
-            data: state.data.filter((intake) => intake.id === resp.data.id),
-          };
-        })
-        .catch((err) => {
-          state = {
-            ...state,
-            error: err,
-          };
-        });
-    },
+    });
+    builder.addCase(addIntake.rejected, (state, action) => {
+      state.loading = false;
+      state.error = action.error.message ?? "An Unexpected Error";
+    });
+    builder.addCase(removeIntake.pending, (state) => {
+      state.loading = true;
+      state.error = "";
+    });
+    builder.addCase(removeIntake.fulfilled, (state, action) => {
+      return {
+        ...state,
+        data: state.data.filter((item) => item.id !== action.payload),
+        loading: false,
+      };
+    });
+    builder.addCase(removeIntake.rejected, (state, action) => {
+      state.loading = false;
+      state.error = action.error.message ?? "An Unexpected Error";
+    });
   },
 });
 
-export const { addIntake, setProfile, removeIntake } = intakeSlice.actions;
+export const { setProfile } = intakeSlice.actions;
 
 export default intakeSlice.reducer;

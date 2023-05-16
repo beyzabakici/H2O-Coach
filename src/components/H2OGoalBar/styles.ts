@@ -18,11 +18,6 @@ const styles = StyleSheet.create({
     width: "100%",
     alignItems: "center",
     justifyContent: "center",
-    shadowColor: Colors.darkBlue,
-    shadowOffset: { width: 1, height: 1 },
-    shadowOpacity: 2,
-    shadowRadius: 1,  
-    elevation: 4
   },
 });
 
