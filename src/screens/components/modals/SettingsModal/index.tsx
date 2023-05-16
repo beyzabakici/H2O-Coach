@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { View, Text } from "react-native";
 import H2OModal from "../../../../components/H2OModal";
-import { ProfileResponseType, SvgEnum } from "../../../../utils";
+import { GoalsResponseType, SvgEnum } from "../../../../utils";
 import { H2OButton, H2OGoalInput } from "../../../../components";
 import { Ionicons } from "@expo/vector-icons";
 import styles from "./styles";
@@ -9,18 +9,25 @@ import styles from "./styles";
 type Props = {
   isVisible: boolean;
   setVisible: (...args: any[]) => void;
-  profile: ProfileResponseType;
+  profile: GoalsResponseType;
+  onSavePress: (...args: any[]) => void;
 };
 
-const SettingsModal: React.FC<Props> = ({ isVisible, setVisible, profile }) => {
-  const [dailyGoal, setDailyGoal] = useState(0);
-  const [weeklyGoal, setWeeklyGoal] = useState(0);
-  const [monthlyGoal, setMonthlyGoal] = useState(0);
+const SettingsModal: React.FC<Props> = ({
+  isVisible,
+  setVisible,
+  profile,
+  onSavePress,
+}) => {
+  const [goals, setGoals] = useState<GoalsResponseType>({
+    dailyGoal: 0,
+    weeklyGoal: 0,
+    monthlyGoal: 0,
+    userId: "1",
+  });
 
   useEffect(() => {
-    setDailyGoal(profile?.dailyGoal);
-    setWeeklyGoal(profile?.weeklyGoal);
-    setMonthlyGoal(profile?.monthlyGoal);
+    setGoals(profile);
   }, [profile]);
 
   return (
@@ -31,18 +38,18 @@ const SettingsModal: React.FC<Props> = ({ isVisible, setVisible, profile }) => {
     >
       <H2OGoalInput
         title={"daily Goal"}
-        currentValue={dailyGoal}
-        setCurrentValue={setDailyGoal}
+        currentValue={goals.dailyGoal}
+        setCurrentValue={(value: string) => setGoals({ ...goals, dailyGoal: parseInt(value) })}
       />
       <H2OGoalInput
         title={"weekly Goal"}
-        currentValue={weeklyGoal}
-        setCurrentValue={setWeeklyGoal}
+        currentValue={goals.weeklyGoal}
+        setCurrentValue={(value: string) => setGoals({ ...goals, weeklyGoal: parseInt(value)})}
       />
       <H2OGoalInput
         title={"monthly Goal"}
-        currentValue={monthlyGoal}
-        setCurrentValue={setMonthlyGoal}
+        currentValue={goals.monthlyGoal}
+        setCurrentValue={(value: string) => setGoals({ ...goals, monthlyGoal: parseInt(value)})}
       />
       <View style={styles.infoArea}>
         <Ionicons name={SvgEnum.Info} style={styles.icon} />
@@ -53,7 +60,7 @@ const SettingsModal: React.FC<Props> = ({ isVisible, setVisible, profile }) => {
         style={styles.button}
         rightText="save"
         textStyle={styles.buttonText}
-        onPress={() => console.log(dailyGoal, weeklyGoal, monthlyGoal)}
+        onPress={() =>onSavePress(goals)}
       />
     </H2OModal>
   );

@@ -1,17 +1,17 @@
 import { PayloadAction, createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import {
-  ProfileResponseType,
+  GoalsResponseType,
   IntakeRequestType,
   IntakeResponseType,
   getCurrentTime,
-  convertedTimestamp,
+  getDayMonthYear,
 } from "../../utils";
 import axios from "axios";
 import { BASE_URL } from "react-native-dotenv";
 
 const initialState: {
   data: IntakeResponseType[];
-  profile: ProfileResponseType;
+  profile: GoalsResponseType;
   error: string;
   loading: boolean;
   todayIntakes: number;
@@ -39,7 +39,7 @@ export const fetchIntakes = createAsyncThunk(
 export const getGoals = createAsyncThunk(
   "intake/getGoals",
   async (id: string) => {
-    const response = await axios.get<ProfileResponseType>(
+    const response = await axios.get<GoalsResponseType>(
       `${BASE_URL}/goal/${id}`
     );
     return response.data;
@@ -68,7 +68,7 @@ const intakeSlice = createSlice({
   name: "intake",
   initialState,
   reducers: {
-    setProfile: (state, action: PayloadAction<ProfileResponseType>) => {
+    setProfile: (state, action: PayloadAction<GoalsResponseType>) => {
       state = {
         ...state,
         profile: action.payload,
@@ -83,9 +83,9 @@ const intakeSlice = createSlice({
     builder.addCase(
       fetchIntakes.fulfilled,
       (state, action: PayloadAction<IntakeResponseType[]>) => {
-        const currentTimestamp = convertedTimestamp(getCurrentTime);
+        const currentTimestamp = getDayMonthYear(getCurrentTime);
         const filteredIntakes = action.payload.filter(
-          (intake) => convertedTimestamp(intake.createdAt) === currentTimestamp
+          (intake) => getDayMonthYear(intake.createdAt) === currentTimestamp
         );
         const todayIntakes = filteredIntakes.reduce(
           (total, intake) => total + Number(intake.amount),
@@ -142,9 +142,14 @@ const intakeSlice = createSlice({
       state.error = "";
     });
     builder.addCase(removeIntake.fulfilled, (state, action) => {
+      const newData = state.data.filter((item) => item.id !== action.payload);
+      const amount =
+        state!.data!.find((item) => item.id === action.payload)?.amount ?? 0;
+      const updatedTodayIntakes = state.todayIntakes - Number(amount);
       return {
         ...state,
-        data: state.data.filter((item) => item.id !== action.payload),
+        data: newData,
+        todayIntakes: updatedTodayIntakes,
         loading: false,
       };
     });

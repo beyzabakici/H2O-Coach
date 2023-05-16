@@ -7,7 +7,7 @@ import { SvgEnum, LiquidUnit } from "../../utils";
 interface Props {
   title: string;
   currentValue: number;
-  setCurrentValue: React.Dispatch<React.SetStateAction<number>>;
+  setCurrentValue: (...args: any[]) => void;
   style?: ViewStyle;
   unit?: LiquidUnit;
 }

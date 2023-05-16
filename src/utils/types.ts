@@ -13,7 +13,7 @@ export type IntakeRequestType = {
     unit: LiquidUnit;
 }
 
-export type ProfileResponseType = {
+export type GoalsResponseType = {
     dailyGoal: number;
     weeklyGoal: number;
     monthlyGoal: number;

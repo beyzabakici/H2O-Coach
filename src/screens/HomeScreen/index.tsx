@@ -12,7 +12,7 @@ import {
   IntakeRequestType,
   IntakeResponseType,
   getCurrentTime,
-  ProfileResponseType,
+  GoalsResponseType,
 } from "../../utils";
 import {
   addIntake,
@@ -27,6 +27,7 @@ import {
   RemoveModal,
   SettingsModal,
 } from "../components";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 type Props = {
   route: any;
@@ -34,29 +35,53 @@ type Props = {
 };
 
 const HomeScreen: React.FC<Props> = ({ route, navigation }) => {
-  const { data, error, loading, profile, todayIntakes } = useAppSelector(
+  const { data, profile, todayIntakes } = useAppSelector(
     (state) => state.intakes
   );
-  const [markedDates, setMarkedDates] = useState<Record<string, MarkedDate>>(
-    {}
-  );
-  const [detailsModalVisible, setDetailsModalVisible] =
-    useState<boolean>(false);
-  const [removeModalVisible, setRemoveModalVisible] = useState<boolean>(false);
-  const [addModalVisible, setAddModalVisible] = useState<boolean>(false);
+  const [markedDates, setMarkedDates] = useState<Record<string, any>>({});
+  const [detailsModalVisible, setDetailsModalVisible] = useState(false);
+  const [removeModalVisible, setRemoveModalVisible] = useState(false);
+  const [addModalVisible, setAddModalVisible] = useState(false);
   const [selectedDayIntakes, setSelectedDayIntakes] = useState<
     IntakeResponseType[]
   >([]);
-  const [goals] = useState<ProfileResponseType>(profile);
+  const [goals, setGoals] = useState<GoalsResponseType>(profile);
 
   const dispatch = useAppDispatch();
 
   useEffect(() => {
-    dispatch(fetchIntakes()).then((resp: any) =>
-      handleMarkedDates(resp.payload)
-    );
-    dispatch(getGoals("1"));
+    dispatch(fetchIntakes()).then((resp: any) => {
+      handleMarkedDates(resp.payload);
+    });
+    getStoreGoals();
+
+    if (!goals.dailyGoal) {
+      dispatch(getGoals("1")).then((resp: any) => {
+        setStoreGoals(resp.payload);
+      });
+    }
   }, []);
+
+  const setStoreGoals = async (value: GoalsResponseType) => {
+    try {
+      const jsonValue = JSON.stringify(value);
+      setGoals(value);
+      await AsyncStorage.setItem("@h2o-coach", jsonValue);
+    } catch (e) {
+      // saving error
+    }
+  };
+
+  const getStoreGoals = async () => {
+    try {
+      const jsonValue = await AsyncStorage.getItem("@h2o-coach");
+      if (jsonValue !== null) {
+        setGoals(JSON.parse(jsonValue));
+      }
+    } catch (e) {
+      // error reading value
+    }
+  };
 
   const addIntakeRequest = (intake: IntakeRequestType) => {
     dispatch(addIntake(intake));
@@ -157,6 +182,7 @@ const HomeScreen: React.FC<Props> = ({ route, navigation }) => {
         isVisible={route?.params?.setttingsModalVisible}
         setVisible={closeSettingsModal}
         profile={goals}
+        onSavePress={(editedGoals) => setStoreGoals(editedGoals)}
       />
       <DetailsModal
         isVisible={detailsModalVisible}
