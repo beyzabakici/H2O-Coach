@@ -24,11 +24,10 @@ const DetailsModal: React.FC<Props> = ({
     >
       <FlatList
         data={dayIntakes}
-        renderItem={({ item }) => (
-          <H2OCard item={item} />
-        )}
+        renderItem={({ item }) => <H2OCard item={item} />}
         keyExtractor={(item) => `intake-${item.id}`}
         contentContainerStyle={styles.contentContainerStyle}
+        showsVerticalScrollIndicator={true}
       />
     </H2OModal>
   );

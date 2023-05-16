@@ -39,6 +39,7 @@ const RemoveModal: React.FC<Props> = ({
         )}
         keyExtractor={(item) => `delete-intake-${item.id}`}
         contentContainerStyle={styles.contentContainerStyle}
+        showsVerticalScrollIndicator={true}
       />
     </H2OModal>
   );
