@@ -19,7 +19,7 @@ const getIntakeAsMilliliters = (amount: number, unit: LiquidUnit): number => {
   return amount * conversionFactor;
 };
 
-const convertedTimestamp = (date: string) => date.slice(0, -5);
+const convertedTimestamp = (date: string) => date.slice(0, 10);
 export {
   screenWidth,
   screenHeight,

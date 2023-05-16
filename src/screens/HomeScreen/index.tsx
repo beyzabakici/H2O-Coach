@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { StatusBar } from "expo-status-bar";
 import { View, SafeAreaView } from "react-native";
 import styles from "./styles";
@@ -34,14 +34,8 @@ type Props = {
 };
 
 const HomeScreen: React.FC<Props> = ({ route, navigation }) => {
-  const { intakes, error, loading, profile, todayIntakes } = useAppSelector(
-    (state) => ({
-      intakes: state.intakes.data,
-      error: state.intakes.error,
-      loading: state.intakes.loading,
-      profile: state.intakes.profile,
-      todayIntakes: state.intakes.todayIntakes,
-    })
+  const { data, error, loading, profile, todayIntakes } = useAppSelector(
+    (state) => state.intakes
   );
   const [markedDates, setMarkedDates] = useState<Record<string, MarkedDate>>(
     {}
@@ -53,9 +47,16 @@ const HomeScreen: React.FC<Props> = ({ route, navigation }) => {
   const [selectedDayIntakes, setSelectedDayIntakes] = useState<
     IntakeResponseType[]
   >([]);
-  const [goals, setGoals] = useState<ProfileResponseType>(profile);
+  const [goals] = useState<ProfileResponseType>(profile);
 
   const dispatch = useAppDispatch();
+
+  useEffect(() => {
+    dispatch(fetchIntakes()).then((resp: any) =>
+      handleMarkedDates(resp.payload)
+    );
+    dispatch(getGoals("1"));
+  }, []);
 
   const addIntakeRequest = (intake: IntakeRequestType) => {
     dispatch(addIntake(intake));
@@ -65,32 +66,26 @@ const HomeScreen: React.FC<Props> = ({ route, navigation }) => {
     dispatch(removeIntake(id));
   };
 
-  const handleMarkedDates = () => {
-    setMarkedDates(
-      convertToMarkedDates(
-        intakes.map((day: IntakeResponseType) => day.createdAt)
-      )
+  const handleMarkedDates = (currentIntakes: IntakeResponseType[]) => {
+    const timestamps = currentIntakes.map(
+      (day: IntakeResponseType) => day.createdAt
     );
+    const convertedMarkedDates = convertToMarkedDates(timestamps);
+    setMarkedDates(convertedMarkedDates);
   };
 
-  useEffect(() => {
-    dispatch(fetchIntakes());
-    intakes && handleMarkedDates();
-    dispatch(getGoals("1"));
-    profile && setGoals(profile);
-  }, []);
-
   const onDayPress = (selectedDay: any) => {
-    const selectedDays: IntakeResponseType[] = intakes.filter(
-      (day) => day.createdAt.slice(0, 10) === selectedDay.dateString && day
+    const selectedDays = data.filter(
+      (day: IntakeResponseType) =>
+        day.createdAt.slice(0, 10) === selectedDay.dateString
     );
     setSelectedDayIntakes(selectedDays);
     setDetailsModalVisible(true);
   };
 
-  function convertToMarkedDates(
+  const convertToMarkedDates = (
     timestamps: string[]
-  ): Record<string, MarkedDate> {
+  ): Record<string, MarkedDate> => {
     const datesObj: Record<string, MarkedDate> = {};
 
     timestamps.forEach((timestamp) => {
@@ -106,19 +101,21 @@ const HomeScreen: React.FC<Props> = ({ route, navigation }) => {
     });
 
     return datesObj;
-  }
+  };
 
   const closeSettingsModal = () => {
     navigation.setParams({ setttingsModalVisible: false });
   };
 
   const onPressRemoveButton = () => {
-    const selectedDays: IntakeResponseType[] = intakes.filter(
-      (day) => day.createdAt.slice(0, 10) === getCurrentTime.slice(0, 10) && day
+    const selectedDays: IntakeResponseType[] = data.filter(
+      (day: IntakeResponseType) =>
+        day.createdAt.slice(0, 10) === getCurrentTime.slice(0, 10)
     );
     setSelectedDayIntakes(selectedDays);
     setRemoveModalVisible(!removeModalVisible);
   };
+
   const onPressAddButton = () => {
     setAddModalVisible(!addModalVisible);
   };

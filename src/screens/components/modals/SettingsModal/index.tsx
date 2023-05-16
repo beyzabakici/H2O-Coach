@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { View, Text } from "react-native";
 import H2OModal from "../../../../components/H2OModal";
 import { ProfileResponseType, SvgEnum } from "../../../../utils";
@@ -13,9 +13,15 @@ type Props = {
 };
 
 const SettingsModal: React.FC<Props> = ({ isVisible, setVisible, profile }) => {
-  const [dailyGoal, setDailyGoal] = useState(profile!.dailyGoal);
-  const [weeklyGoal, setWeeklyGoal] = useState(profile!.weeklyGoal);
-  const [monthlyGoal, setMonthlyGoal] = useState(profile!.monthlyGoal);
+  const [dailyGoal, setDailyGoal] = useState(0);
+  const [weeklyGoal, setWeeklyGoal] = useState(0);
+  const [monthlyGoal, setMonthlyGoal] = useState(0);
+
+  useEffect(() => {
+    setDailyGoal(profile?.dailyGoal);
+    setWeeklyGoal(profile?.weeklyGoal);
+    setMonthlyGoal(profile?.monthlyGoal);
+  }, [profile]);
 
   return (
     <H2OModal
