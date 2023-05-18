@@ -50,25 +50,26 @@ const HomeScreen: React.FC<Props> = ({ route, navigation }) => {
   const dispatch = useAppDispatch();
 
   useEffect(() => {
-    dispatch(fetchIntakes()).then((resp: any) => {
-      handleMarkedDates(resp.payload);
-    });
+    dispatch(fetchIntakes()).catch((error) => console.log("err", error));
     getStoreGoals();
+    !goals?.dailyGoal && dispatch(getGoals("1"));
+  }, [dispatch]);
 
-    if (!goals.dailyGoal) {
-      dispatch(getGoals("1")).then((resp: any) => {
-        setStoreGoals(resp.payload);
-      });
-    }
-  }, []);
+  useEffect(() => {
+    handleMarkedDates(data);
+  }, [data]);
+
+  useEffect(() => {
+    setStoreGoals(profile);
+  }, [profile]);
 
   const setStoreGoals = async (value: GoalsResponseType) => {
     try {
       const jsonValue = JSON.stringify(value);
       setGoals(value);
       await AsyncStorage.setItem("@h2o-coach", jsonValue);
-    } catch (e) {
-      // saving error
+    } catch (error) {
+      console.log("Async Storage Error: ", error);
     }
   };
 
@@ -78,8 +79,8 @@ const HomeScreen: React.FC<Props> = ({ route, navigation }) => {
       if (jsonValue !== null) {
         setGoals(JSON.parse(jsonValue));
       }
-    } catch (e) {
-      // error reading value
+    } catch (error) {
+      console.log("Async Storage Error: ", error);
     }
   };
 
@@ -92,9 +93,7 @@ const HomeScreen: React.FC<Props> = ({ route, navigation }) => {
   };
 
   const handleMarkedDates = (currentIntakes: IntakeResponseType[]) => {
-    const timestamps = currentIntakes.map(
-      (day: IntakeResponseType) => day.createdAt
-    );
+    const timestamps = currentIntakes.map((day) => day.createdAt);
     const convertedMarkedDates = convertToMarkedDates(timestamps);
     setMarkedDates(convertedMarkedDates);
   };
@@ -151,7 +150,7 @@ const HomeScreen: React.FC<Props> = ({ route, navigation }) => {
       <View style={styles.goalArea}>
         <H2OGoalBar
           amount={todayIntakes}
-          goal={goals.dailyGoal}
+          goal={goals?.dailyGoal}
           unit={LiquidUnit.Milliliter}
         />
         <View style={styles.buttonArea}>

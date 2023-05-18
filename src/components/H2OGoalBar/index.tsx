@@ -11,8 +11,16 @@ type Props = {
   unit?: LiquidUnit;
 };
 
-const H2OGoalBar: React.FC<Props> = ({ style, amount, goal, unit = LiquidUnit.Milliliter }) => {
-  const progressPercent = useMemo(() => Math.round((amount * 100) / goal), [amount, goal]);
+const H2OGoalBar: React.FC<Props> = ({
+  style,
+  amount,
+  goal,
+  unit = LiquidUnit.Milliliter,
+}) => {
+  const progressPercent = useMemo(
+    () => goal && amount && Math.round((amount * 100) / goal),
+    [amount, goal]
+  );
 
   useEffect(() => {
     // Perform any side effects related to progress percent changes here
@@ -20,19 +28,17 @@ const H2OGoalBar: React.FC<Props> = ({ style, amount, goal, unit = LiquidUnit.Mi
 
   const renderGoalReached = () => {
     if (amount >= goal) {
-      return (
-        <Text>Goal Reached! 🎉 </Text>
-      );
+      return <Text>Goal Reached! 🎉 </Text>;
     }
     return null;
   };
-
+  
   return (
     <View style={[styles.container, style]}>
       <AnimatedCircularProgress
         size={screenWidth * 0.55}
         width={6}
-        fill={progressPercent}
+        fill={progressPercent || 0}
         tintColor={Colors.primaryBlue}
         backgroundColor={Colors.primaryDarkBlue}
       >
@@ -40,7 +46,9 @@ const H2OGoalBar: React.FC<Props> = ({ style, amount, goal, unit = LiquidUnit.Mi
           <View style={styles.childrenArea}>
             {renderGoalReached()}
             <Text style={styles.points}>{progressPercent} %</Text>
-            <Text>{amount} / {goal} {unit}</Text>
+            <Text>
+              {amount} / {goal} {unit}
+            </Text>
           </View>
         )}
       </AnimatedCircularProgress>

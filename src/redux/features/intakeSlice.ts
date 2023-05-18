@@ -7,7 +7,9 @@ import {
   getDayMonthYear,
 } from "../../utils";
 import axios from "axios";
-import { BASE_URL } from "react-native-dotenv";
+import Constants from "expo-constants";
+import { AppConfig } from "../../../app.config";
+const { BASE_URL } = Constants.manifest?.extra as AppConfig;
 
 const initialState: {
   data: IntakeResponseType[];
@@ -31,7 +33,7 @@ const initialState: {
 export const fetchIntakes = createAsyncThunk(
   "intake/fetchIntakes",
   async () => {
-    const response = await axios.get<IntakeResponseType[]>(`${BASE_URL}intake`);
+    const response = await axios.get<IntakeResponseType[]>(`${BASE_URL}intake`).catch();
     return response.data;
   }
 );
@@ -77,29 +79,34 @@ const intakeSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder.addCase(fetchIntakes.pending, (state) => {
+      console.log(1);
       state.loading = true;
       state.error = "";
     });
-    builder.addCase(
-      fetchIntakes.fulfilled,
-      (state, action: PayloadAction<IntakeResponseType[]>) => {
-        const currentTimestamp = getDayMonthYear(getCurrentTime);
-        const filteredIntakes = action.payload.filter(
-          (intake) => getDayMonthYear(intake.createdAt) === currentTimestamp
-        );
-        const todayIntakes = filteredIntakes.reduce(
-          (total, intake) => total + Number(intake.amount),
-          0
-        );
-        return {
-          ...state,
-          data: action.payload,
-          todayIntakes,
-          loading: false,
-        };
-      }
-    );
-    builder.addCase(fetchIntakes.rejected, (state) => {
+    builder.addCase(fetchIntakes.fulfilled, (state, action) => {
+      console.log(2);
+      const currentTimestamp = getDayMonthYear(getCurrentTime);
+      const { payload } = action;
+
+      const filteredIntakes = payload.filter(
+        (intake) => getDayMonthYear(intake.createdAt) === currentTimestamp
+      );
+
+      const todayIntakes = filteredIntakes.reduce(
+        (total, intake) => total + Number(intake.amount),
+        0
+      );
+
+      return {
+        ...state,
+        data: payload,
+        todayIntakes,
+        loading: false,
+      };
+    });
+
+    builder.addCase(fetchIntakes.rejected, (state, action) => {
+      console.log(3, action.error.message);
       state.loading = false;
       state.error = "An Unexpected Error";
     });

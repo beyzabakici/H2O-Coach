@@ -20,9 +20,9 @@ const SettingsModal: React.FC<Props> = ({
   onSavePress,
 }) => {
   const [goals, setGoals] = useState<GoalsResponseType>({
-    dailyGoal: 0,
-    weeklyGoal: 0,
-    monthlyGoal: 0,
+    dailyGoal: 1,
+    weeklyGoal: 1,
+    monthlyGoal: 1,
     userId: "1",
   });
 
@@ -43,18 +43,24 @@ const SettingsModal: React.FC<Props> = ({
     >
       <H2OGoalInput
         title={"daily Goal"}
-        currentValue={goals.dailyGoal}
-        setCurrentValue={(value: string) => setGoals({ ...goals, dailyGoal: parseInt(value) })}
+        currentValue={goals?.dailyGoal}
+        setCurrentValue={(value: string) =>
+          setGoals({ ...goals, dailyGoal: parseInt(value) })
+        }
       />
       <H2OGoalInput
         title={"weekly Goal"}
-        currentValue={goals.weeklyGoal}
-        setCurrentValue={(value: string) => setGoals({ ...goals, weeklyGoal: parseInt(value)})}
+        currentValue={goals?.weeklyGoal}
+        setCurrentValue={(value: string) =>
+          setGoals({ ...goals, weeklyGoal: parseInt(value) })
+        }
       />
       <H2OGoalInput
         title={"monthly Goal"}
-        currentValue={goals.monthlyGoal}
-        setCurrentValue={(value: string) => setGoals({ ...goals, monthlyGoal: parseInt(value)})}
+        currentValue={goals?.monthlyGoal}
+        setCurrentValue={(value: string) =>
+          setGoals({ ...goals, monthlyGoal: parseInt(value) })
+        }
       />
       <View style={styles.infoArea}>
         <Ionicons name={SvgEnum.Info} style={styles.icon} />

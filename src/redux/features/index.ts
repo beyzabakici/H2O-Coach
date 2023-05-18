@@ -1,1 +1,1 @@
-export {default as intakeSlice } from './intakeSlice'
+export {default as intakeSlice } from './intakeSlice';
