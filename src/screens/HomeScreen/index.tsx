@@ -103,7 +103,7 @@ const HomeScreen: React.FC<Props> = ({ route, navigation }) => {
       content: {
         title: "H2O Coach",
         body: `You have ${
-          goals?.dailyGoal - todayIntakes
+          goals!.dailyGoal - todayIntakes
         } ml more to take today!!`,
       },
       trigger: {
@@ -123,7 +123,7 @@ const HomeScreen: React.FC<Props> = ({ route, navigation }) => {
     alertForPermission();
     const interval = setInterval(() => {
       triggerNotification();
-    }, 3600); // 1 hour = 1000 millisecond * 60 second * 60 minute
+    }, 360000); // 1 hour = 1000 millisecond * 60 second * 60 minute
     return () => {
       clearInterval(interval);
     };

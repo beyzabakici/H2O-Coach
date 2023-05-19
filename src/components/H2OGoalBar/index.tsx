@@ -1,8 +1,17 @@
 import React, { useEffect, useMemo } from "react";
-import { View, Text, StyleProp, ViewStyle } from "react-native";
+import { View, Text, StyleProp, ViewStyle, Share } from "react-native";
 import { AnimatedCircularProgress } from "react-native-circular-progress";
-import { Colors, LiquidUnit, screenWidth } from "../../utils";
+import {
+  Colors,
+  LiquidUnit,
+  SvgEnum,
+  appURL,
+  screenWidth,
+  shareText,
+} from "../../utils";
 import styles from "./styles";
+import H2OButton from "../H2OButton";
+import { setError } from "../../redux/features/intakeSlice";
 
 type Props = {
   style?: StyleProp<ViewStyle>;
@@ -22,6 +31,23 @@ const H2OGoalBar: React.FC<Props> = ({
     [amount, goal]
   );
 
+  const onPressShare = async () => {
+    const shareOptions = {
+      title: "H2O Coach",
+      failOnCancel: false,
+      urls: appURL,
+    };
+
+    try {
+      const ShareResponse = await Share.share({
+        ...shareOptions,
+        message: shareText,
+      });
+    } catch (error) {
+      setError(error);
+    }
+  };
+
   useEffect(() => {
     // Perform any side effects related to progress percent changes here
   }, [progressPercent]);
@@ -32,7 +58,7 @@ const H2OGoalBar: React.FC<Props> = ({
     }
     return null;
   };
-  
+
   return (
     <View style={[styles.container, style]}>
       <AnimatedCircularProgress
@@ -52,6 +78,11 @@ const H2OGoalBar: React.FC<Props> = ({
           </View>
         )}
       </AnimatedCircularProgress>
+      <H2OButton
+        onPress={onPressShare}
+        svg={SvgEnum.Share}
+        style={styles.share}
+      />
     </View>
   );
 };

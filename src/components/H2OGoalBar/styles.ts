@@ -19,6 +19,11 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
   },
+  share: {
+    alignSelf: 'flex-end',
+    marginTop: -28,
+    marginLeft: -20,
+  }
 });
 
 export default styles;
