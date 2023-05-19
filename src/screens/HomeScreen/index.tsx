@@ -13,7 +13,6 @@ import {
   IntakeResponseType,
   getCurrentTime,
   GoalsResponseType,
-  screenWidth,
 } from "../../utils";
 import {
   addIntake,
@@ -31,11 +30,23 @@ import {
 } from "../components";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Footer } from "./components";
+import * as Notifications from "expo-notifications";
 
 type Props = {
   route: any;
   navigation: any;
 };
+
+export async function requestPermissionsAsync() {
+  return await Notifications.requestPermissionsAsync({
+    ios: {
+      allowAlert: true,
+      allowBadge: true,
+      allowSound: true,
+      allowAnnouncements: true,
+    },
+  });
+}
 
 const HomeScreen: React.FC<Props> = ({ route, navigation }) => {
   const { data, profile, todayIntakes, error, loading } = useAppSelector(
@@ -86,6 +97,37 @@ const HomeScreen: React.FC<Props> = ({ route, navigation }) => {
       setError(`Async Storage Error: ${error}`);
     }
   };
+
+  const triggerNotification = () => {
+    Notifications.scheduleNotificationAsync({
+      content: {
+        title: "H2O Coach",
+        body: `You have ${
+          goals?.dailyGoal - todayIntakes
+        } ml more to take today!!`,
+      },
+      trigger: {
+        seconds: 10,
+      },
+    });
+  };
+
+  useEffect(() => {
+    const alertForPermission = () => {
+      Notifications.getPermissionsAsync().then((statusobj) => {
+        if (statusobj.status !== "granted") {
+          requestPermissionsAsync();
+        }
+      });
+    };
+    alertForPermission();
+    const interval = setInterval(() => {
+      triggerNotification();
+    }, 3600); // 1 hour = 1000 millisecond * 60 second * 60 minute
+    return () => {
+      clearInterval(interval);
+    };
+  }, []);
 
   const addIntakeRequest = (intake: IntakeRequestType) => {
     dispatch(addIntake(intake));
