@@ -144,19 +144,17 @@ const HomeScreen: React.FC<Props> = ({ route, navigation }) => {
     ]);
   };
 
-  if (loading) {
-    return (
+  if (error) {
+    errorAlert();
+    return <></>;
+  } else {
+    return !!loading ? (
       <ActivityIndicator
         size="large"
         style={styles.loading}
         color={Colors.primaryBlue}
       />
-    );
-  } else if (error) {
-    errorAlert();
-    return <></>;
-  } else {
-    return (
+    ) : (
       <SafeAreaView style={styles.screenContainer}>
         <StatusBar style="dark" />
         <View style={styles.goalArea}>

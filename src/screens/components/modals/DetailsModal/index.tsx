@@ -1,7 +1,7 @@
 import React from "react";
-import { FlatList } from "react-native";
+import { FlatList, Text } from "react-native";
 import H2OModal from "../../../../components/H2OModal";
-import { IntakeResponseType } from "../../../../utils";
+import { IntakeResponseType, LiquidUnit } from "../../../../utils";
 import { H2OCard } from "../../../../components";
 import styles from "./styles";
 
@@ -16,6 +16,10 @@ const DetailsModal: React.FC<Props> = ({
   setVisible,
   dayIntakes,
 }) => {
+  const dailyIntake = dayIntakes.reduce(
+    (total, intake) => (intake.amount ? total + Number(intake.amount) : 0),
+    0
+  );
   return (
     <H2OModal
       isVisible={isVisible}
@@ -28,6 +32,11 @@ const DetailsModal: React.FC<Props> = ({
         keyExtractor={(item) => `intake-${item.id}`}
         contentContainerStyle={styles.contentContainerStyle}
         showsVerticalScrollIndicator={true}
+        ListFooterComponent={() => (
+          <Text
+            style={styles.dailyIntakeInfo}
+          >{`Daily Intake: ${dailyIntake} ${LiquidUnit.Milliliter}`}</Text>
+        )}
       />
     </H2OModal>
   );

@@ -1,5 +1,5 @@
 import React from "react";
-import { FlatList } from "react-native";
+import { FlatList, Text } from "react-native";
 import H2OModal from "../../../../components/H2OModal";
 import { IntakeResponseType } from "../../../../utils";
 import { H2OCard } from "../../../../components";
@@ -18,6 +18,11 @@ const RemoveModal: React.FC<Props> = ({
   dayIntakes,
   deleteIntake,
 }) => {
+  const dailyIntake = dayIntakes.reduce(
+    (total, intake) => total + Number(intake.amount),
+    0
+  );
+
   const handleButtonPress = (id: string) => {
     deleteIntake(id);
     setVisible(false);
@@ -40,6 +45,11 @@ const RemoveModal: React.FC<Props> = ({
         keyExtractor={(item) => `delete-intake-${item.id}`}
         contentContainerStyle={styles.contentContainerStyle}
         showsVerticalScrollIndicator={true}
+        ListFooterComponent={() => (
+          <Text
+            style={styles.dailyIntakeInfo}
+          >{`Daily Intake: ${dailyIntake}`}</Text>
+        )}
       />
     </H2OModal>
   );

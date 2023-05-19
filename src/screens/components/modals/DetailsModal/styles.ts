@@ -7,6 +7,12 @@ const styles = StyleSheet.create({
   contentContainerStyle: {
     flexGrow: 1,
   },
+  dailyIntakeInfo: {
+    paddingLeft: "2%",
+    fontSize: 14,
+    fontWeight: "bold",
+    alignSelf: "center",
+  }
 });
 
 export default styles;
