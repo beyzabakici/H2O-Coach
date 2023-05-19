@@ -1,5 +1,6 @@
 import { StyleSheet } from "react-native";
 import { Colors } from "../../utils/colors";
+import { screenWidth } from "../../utils";
 
 const styles = StyleSheet.create({
   screenContainer: {
@@ -12,19 +13,12 @@ const styles = StyleSheet.create({
     borderColor: Colors.shadowOrange,
     backgroundColor: Colors.buttonOrange,
     borderRadius: 25,
-    marginLeft: '2%',
+    marginLeft: "2%",
   },
   buttonIcon: {
     color: Colors.primaryOrange,
     paddingVertical: "0.5%",
     marginHorizontal: "2%",
-  },
-  container: {
-    flex: 1,
-  },
-  calendar: {
-    marginHorizontal: "5%",
-    marginVertical: "5%",
   },
   goalArea: {
     flex: 0.8,
@@ -32,8 +26,14 @@ const styles = StyleSheet.create({
   },
   buttonArea: {
     flexDirection: "row",
-    alignSelf: 'center',
+    alignSelf: "center",
     marginTop: "5%",
+  },
+  loading: {
+    alignSelf: "center",
+    flex: 1,
+    backgroundColor: Colors.white,
+    width: screenWidth,
   },
 });
 

@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { StatusBar } from "expo-status-bar";
-import { View, SafeAreaView } from "react-native";
+import { View, SafeAreaView, Alert, ActivityIndicator } from "react-native";
 import styles from "./styles";
-import { H2OButton, H2OCalendar } from "../../components";
+import { H2OButton } from "../../components";
 import { useAppDispatch, useAppSelector } from "../../redux";
 import {
   SvgEnum,
@@ -13,12 +13,14 @@ import {
   IntakeResponseType,
   getCurrentTime,
   GoalsResponseType,
+  screenWidth,
 } from "../../utils";
 import {
   addIntake,
   fetchIntakes,
   removeIntake,
   getGoals,
+  setError,
 } from "../../redux/features/intakeSlice";
 import H2OGoalBar from "../../components/H2OGoalBar";
 import {
@@ -28,6 +30,7 @@ import {
   SettingsModal,
 } from "../components";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { Footer } from "./components";
 
 type Props = {
   route: any;
@@ -35,7 +38,7 @@ type Props = {
 };
 
 const HomeScreen: React.FC<Props> = ({ route, navigation }) => {
-  const { data, profile, todayIntakes } = useAppSelector(
+  const { data, profile, todayIntakes, error, loading } = useAppSelector(
     (state) => state.intakes
   );
   const [markedDates, setMarkedDates] = useState<Record<string, any>>({});
@@ -50,7 +53,7 @@ const HomeScreen: React.FC<Props> = ({ route, navigation }) => {
   const dispatch = useAppDispatch();
 
   useEffect(() => {
-    dispatch(fetchIntakes()).catch((error) => console.log("err", error));
+    dispatch(fetchIntakes());
     getStoreGoals();
     !goals?.dailyGoal && dispatch(getGoals("1"));
   }, [dispatch]);
@@ -69,7 +72,7 @@ const HomeScreen: React.FC<Props> = ({ route, navigation }) => {
       setGoals(value);
       await AsyncStorage.setItem("@h2o-coach", jsonValue);
     } catch (error) {
-      console.log("Async Storage Error: ", error);
+      setError(`Async Storage Error: ${error}`);
     }
   };
 
@@ -80,7 +83,7 @@ const HomeScreen: React.FC<Props> = ({ route, navigation }) => {
         setGoals(JSON.parse(jsonValue));
       }
     } catch (error) {
-      console.log("Async Storage Error: ", error);
+      setError(`Async Storage Error: ${error}`);
     }
   };
 
@@ -96,15 +99,6 @@ const HomeScreen: React.FC<Props> = ({ route, navigation }) => {
     const timestamps = currentIntakes.map((day) => day.createdAt);
     const convertedMarkedDates = convertToMarkedDates(timestamps);
     setMarkedDates(convertedMarkedDates);
-  };
-
-  const onDayPress = (selectedDay: any) => {
-    const selectedDays = data.filter(
-      (day: IntakeResponseType) =>
-        day.createdAt.slice(0, 10) === selectedDay.dateString
-    );
-    setSelectedDayIntakes(selectedDays);
-    setDetailsModalVisible(true);
   };
 
   const convertToMarkedDates = (
@@ -144,63 +138,80 @@ const HomeScreen: React.FC<Props> = ({ route, navigation }) => {
     setAddModalVisible(!addModalVisible);
   };
 
-  return (
-    <SafeAreaView style={styles.screenContainer}>
-      <StatusBar style="dark" />
-      <View style={styles.goalArea}>
-        <H2OGoalBar
-          amount={todayIntakes}
-          goal={goals?.dailyGoal}
-          unit={LiquidUnit.Milliliter}
-        />
-        <View style={styles.buttonArea}>
-          <H2OButton
-            onPress={onPressRemoveButton}
-            rightText="Remove"
-            svg={SvgEnum.Remove}
-            style={styles.button}
-            iconStyle={styles.buttonIcon}
+  const errorAlert = () => {
+    Alert.alert(error ? error : "Error", "Please try again later.", [
+      { text: "OK", onPress: () => dispatch(fetchIntakes()) },
+    ]);
+  };
+
+  if (loading) {
+    return (
+      <ActivityIndicator
+        size="large"
+        style={styles.loading}
+        color={Colors.primaryBlue}
+      />
+    );
+  } else if (error) {
+    errorAlert();
+    return <></>;
+  } else {
+    return (
+      <SafeAreaView style={styles.screenContainer}>
+        <StatusBar style="dark" />
+        <View style={styles.goalArea}>
+          <H2OGoalBar
+            amount={todayIntakes}
+            goal={goals?.dailyGoal}
+            unit={LiquidUnit.Milliliter}
           />
-          <H2OButton
-            onPress={onPressAddButton}
-            rightText="Add"
-            svg={SvgEnum.Add}
-            style={styles.button}
-            iconStyle={styles.buttonIcon}
-          />
+          <View style={styles.buttonArea}>
+            <H2OButton
+              onPress={onPressRemoveButton}
+              rightText="Remove"
+              svg={SvgEnum.Remove}
+              style={styles.button}
+              iconStyle={styles.buttonIcon}
+            />
+            <H2OButton
+              onPress={onPressAddButton}
+              rightText="Add"
+              svg={SvgEnum.Add}
+              style={styles.button}
+              iconStyle={styles.buttonIcon}
+            />
+          </View>
         </View>
-      </View>
-      <View style={styles.container}>
-        <H2OCalendar
-          style={styles.calendar}
-          onDayPress={onDayPress}
+        <Footer
+          setDetailsModalVisible={setDetailsModalVisible}
+          setSelectedDayIntakes={setSelectedDayIntakes}
           markedDates={markedDates}
         />
-      </View>
-      <SettingsModal
-        isVisible={route?.params?.setttingsModalVisible}
-        setVisible={closeSettingsModal}
-        profile={goals}
-        onSavePress={(editedGoals) => setStoreGoals(editedGoals)}
-      />
-      <DetailsModal
-        isVisible={detailsModalVisible}
-        setVisible={setDetailsModalVisible}
-        dayIntakes={selectedDayIntakes}
-      />
-      <RemoveModal
-        isVisible={removeModalVisible}
-        setVisible={setRemoveModalVisible}
-        dayIntakes={selectedDayIntakes}
-        deleteIntake={deleteIntake}
-      />
-      <AddModal
-        isVisible={addModalVisible}
-        setVisible={setAddModalVisible}
-        addIntake={addIntakeRequest}
-      />
-    </SafeAreaView>
-  );
+        <SettingsModal
+          isVisible={route?.params?.setttingsModalVisible}
+          setVisible={closeSettingsModal}
+          profile={goals}
+          onSavePress={(editedGoals) => setStoreGoals(editedGoals)}
+        />
+        <DetailsModal
+          isVisible={detailsModalVisible}
+          setVisible={setDetailsModalVisible}
+          dayIntakes={selectedDayIntakes}
+        />
+        <RemoveModal
+          isVisible={removeModalVisible}
+          setVisible={setRemoveModalVisible}
+          dayIntakes={selectedDayIntakes}
+          deleteIntake={deleteIntake}
+        />
+        <AddModal
+          isVisible={addModalVisible}
+          setVisible={setAddModalVisible}
+          addIntake={addIntakeRequest}
+        />
+      </SafeAreaView>
+    );
+  }
 };
 
 export default HomeScreen;

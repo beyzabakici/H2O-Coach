@@ -14,7 +14,7 @@ const { BASE_URL } = Constants.manifest?.extra as AppConfig;
 const initialState: {
   data: IntakeResponseType[];
   profile: GoalsResponseType;
-  error: string;
+  error: string | undefined;
   loading: boolean;
   todayIntakes: number;
 } = {
@@ -33,7 +33,7 @@ const initialState: {
 export const fetchIntakes = createAsyncThunk(
   "intake/fetchIntakes",
   async () => {
-    const response = await axios.get<IntakeResponseType[]>(`${BASE_URL}intake`).catch();
+    const response = await axios.get<IntakeResponseType[]>(`${BASE_URL}intake`);
     return response.data;
   }
 );
@@ -76,26 +76,34 @@ const intakeSlice = createSlice({
         profile: action.payload,
       };
     },
+    setError: (state, action) => {
+      state = {
+        ...state,
+        error: action.payload,
+      };
+    },
   },
   extraReducers: (builder) => {
     builder.addCase(fetchIntakes.pending, (state) => {
-      console.log(1);
       state.loading = true;
       state.error = "";
     });
     builder.addCase(fetchIntakes.fulfilled, (state, action) => {
-      console.log(2);
       const currentTimestamp = getDayMonthYear(getCurrentTime);
       const { payload } = action;
 
-      const filteredIntakes = payload.filter(
-        (intake) => getDayMonthYear(intake.createdAt) === currentTimestamp
-      );
+      const filteredIntakes =
+        payload &&
+        payload.filter(
+          (intake) => getDayMonthYear(intake.createdAt) === currentTimestamp
+        );
 
-      const todayIntakes = filteredIntakes.reduce(
-        (total, intake) => total + Number(intake.amount),
-        0
-      );
+      const todayIntakes =
+        filteredIntakes &&
+        filteredIntakes.reduce(
+          (total, intake) => total + Number(intake.amount),
+          0
+        );
 
       return {
         ...state,
@@ -106,11 +114,10 @@ const intakeSlice = createSlice({
     });
 
     builder.addCase(fetchIntakes.rejected, (state, action) => {
-      console.log(3, action.error.message);
       state.loading = false;
-      state.error = "An Unexpected Error";
+      state.error = action.error.message;
     });
-    builder.addCase(getGoals.pending, (state) => {
+    builder.addCase(getGoals.pending, (state, action) => {
       state.loading = true;
       state.error = "";
     });
@@ -121,9 +128,9 @@ const intakeSlice = createSlice({
         loading: false,
       };
     });
-    builder.addCase(getGoals.rejected, (state) => {
+    builder.addCase(getGoals.rejected, (state, action) => {
       state.loading = false;
-      state.error = "An Unexpected Error";
+      state.error = action.error.message;
     });
     builder.addCase(addIntake.pending, (state) => {
       state.loading = true;
@@ -142,7 +149,7 @@ const intakeSlice = createSlice({
     });
     builder.addCase(addIntake.rejected, (state, action) => {
       state.loading = false;
-      state.error = action.error.message ?? "An Unexpected Error";
+      state.error = action.error.message;
     });
     builder.addCase(removeIntake.pending, (state) => {
       state.loading = true;
@@ -162,11 +169,11 @@ const intakeSlice = createSlice({
     });
     builder.addCase(removeIntake.rejected, (state, action) => {
       state.loading = false;
-      state.error = action.error.message ?? "An Unexpected Error";
+      state.error = action.error.message;
     });
   },
 });
 
-export const { setProfile } = intakeSlice.actions;
+export const { setProfile, setError } = intakeSlice.actions;
 
 export default intakeSlice.reducer;
