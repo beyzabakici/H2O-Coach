@@ -15,6 +15,7 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.shadowPrimaryBlue,
   },
   title: {
+    maxWidth: '60%',
     fontSize: 14,
     fontWeight: "bold",
     alignSelf: "center",
