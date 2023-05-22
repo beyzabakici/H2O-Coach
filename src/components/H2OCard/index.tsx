@@ -15,7 +15,7 @@ type Props = {
 const H2OCard: React.FC<Props> = ({ style, item, deleteIntake }) => {
   const formatedDate = moment.utc(item.createdAt).format("HH:mm");
   return (
-    <View style={{ ...styles.container, ...style }}>
+    <View testID="H2O-Card" style={{ ...styles.container, ...style }}>
       <View style={styles.innerContainer}>
         <Ionicons name={SvgEnum.Intake} style={styles.icon} />
         <Text style={styles.title}>{item.amount}</Text>
@@ -24,6 +24,7 @@ const H2OCard: React.FC<Props> = ({ style, item, deleteIntake }) => {
       <Text style={styles.title}>{formatedDate}</Text>
       {deleteIntake && (
         <H2OButton
+        testID="H2O-Card-Button"
           svg={SvgEnum.Remove}
           onPress={deleteIntake}
           iconStyle={styles.deleteIcon}

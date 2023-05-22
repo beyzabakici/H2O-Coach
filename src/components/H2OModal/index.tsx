@@ -33,9 +33,13 @@ const H2OModal: React.FC<Props> = ({
       onBackdropPress={closeModal}
     >
       <View style={{ ...styles.innerContainer, ...style }}>
-        <TouchableOpacity style={styles.closeButton} onPress={closeModal}>
-          <H2OButton svg={SvgEnum.Close} onPress={closeModal} />
-        </TouchableOpacity>
+        <H2OButton
+          style={styles.closeButton}
+          testID="h2o-modal-button"
+          svg={SvgEnum.Close}
+          onPress={closeModal}
+        />
+
         {children}
       </View>
     </Modal>

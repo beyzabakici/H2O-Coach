@@ -39,7 +39,7 @@ const H2OGoalBar: React.FC<Props> = ({
     };
 
     try {
-      const ShareResponse = await Share.share({
+      await Share.share({
         ...shareOptions,
         message: shareText,
       });
@@ -79,6 +79,7 @@ const H2OGoalBar: React.FC<Props> = ({
         )}
       </AnimatedCircularProgress>
       <H2OButton
+        testID="h2o-goalbar-button"
         onPress={onPressShare}
         svg={SvgEnum.Share}
         style={styles.share}

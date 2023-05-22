@@ -11,22 +11,25 @@ type Props = {
   svg?: SvgEnum;
   iconStyle?: ViewStyle | TextStyle;
   textStyle?: TextStyle;
+  testID?: string;
 };
 
-const H2OGoalBar: React.FC<Props> = ({
+const H2OButton: React.FC<Props> = ({
   style,
   onPress,
   rightText = "",
   svg = undefined,
   iconStyle = {},
   textStyle = {},
+  testID = "H2OButton",
 }) => {
   return (
     <TouchableOpacity
+      testID={testID}
       style={{ ...style, ...styles.container }}
       onPress={onPress}
     >
-      {svg && <Ionicons name={svg} style={{ ...styles.icon, ...iconStyle }} />}
+      {svg && <Ionicons testID="H2OButtonIcon" name={svg} style={{ ...styles.icon, ...iconStyle }} />}
       {rightText && (
         <Text style={{ ...styles.text, ...textStyle }}>{rightText}</Text>
       )}
@@ -34,4 +37,4 @@ const H2OGoalBar: React.FC<Props> = ({
   );
 };
 
-export default H2OGoalBar;
+export default H2OButton;

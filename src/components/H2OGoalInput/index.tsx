@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import { View, Text, TextInput, ViewStyle } from "react-native";
 import styles from "./styles";
 import H2OButton from "../H2OButton";
@@ -33,6 +33,7 @@ const H2OGoalInput: React.FC<Props> = ({
       <Text style={styles.title}>{title}</Text>
       <View style={styles.innerContainer}>
         <H2OButton
+          testID={"button-remove"}
           style={styles.removeButton}
           svg={SvgEnum.Remove}
           onPress={reduceValue}
@@ -48,6 +49,7 @@ const H2OGoalInput: React.FC<Props> = ({
           <Text style={styles.unitText}>{unit}</Text>
         </View>
         <H2OButton
+          testID={"button-add"}
           style={styles.addButton}
           svg={SvgEnum.Add}
           onPress={increaseValue}

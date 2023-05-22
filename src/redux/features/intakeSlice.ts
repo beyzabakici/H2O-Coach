@@ -9,7 +9,7 @@ import {
 import axios from "axios";
 import Constants from "expo-constants";
 import { AppConfig } from "../../../app.config";
-const { BASE_URL } = Constants.manifest?.extra as AppConfig;
+const { BASE_URL } = (Constants.manifest?.extra as AppConfig) || {};
 
 const initialState: {
   data: IntakeResponseType[];

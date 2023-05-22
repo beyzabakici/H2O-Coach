@@ -1,8 +1,6 @@
 import React from "react";
 import { TouchableOpacity, View, ViewStyle, Text } from "react-native";
-import Modal from "react-native-modal";
 import styles from "./styles";
-import { H2OButton } from "..";
 import { LiquidUnit, SvgEnum } from "../../utils";
 import { Ionicons } from "@expo/vector-icons";
 
