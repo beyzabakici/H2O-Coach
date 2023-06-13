@@ -47,6 +47,18 @@ const styles = StyleSheet.create({
     textTransform: "uppercase",
     color: Colors.primaryOrange,
   },
+  buttonArea: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-evenly",
+  },
+  scanButton: {
+    backgroundColor: Colors.shadowPrimaryBlue,
+    borderColor: Colors.darkSecondaryBlue,
+  },
+  scanButtonIcon: {
+    fontSize: 20
+  }
 });
 
 export default styles;

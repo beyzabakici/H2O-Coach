@@ -35,6 +35,17 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.white,
     width: screenWidth,
   },
+  
+  buttonx: {
+    zIndex: 100,
+    paddingVertical: 15,
+    paddingHorizontal: 30,
+    borderRadius: 10,
+    backgroundColor: "#303940",
+  },
+  buttonText: {
+    color: Colors.white,
+  },
 });
 
 export default styles;

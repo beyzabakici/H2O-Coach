@@ -16,9 +16,17 @@ type Props = {
   isVisible: boolean;
   setVisible: (...args: any[]) => void;
   addIntake: (...args: any[]) => void;
+  onPressScan?: (...args: any[]) => void;
+  scanButtonText: string;
 };
 
-const AddModal: React.FC<Props> = ({ isVisible, setVisible, addIntake }) => {
+const AddModal: React.FC<Props> = ({
+  isVisible,
+  setVisible,
+  addIntake,
+  onPressScan = () => {},
+  scanButtonText,
+}) => {
   const [intake, setIntake] = useState<IntakeRequestType>({
     amount: 0,
     createdAt: "",
@@ -57,13 +65,23 @@ const AddModal: React.FC<Props> = ({ isVisible, setVisible, addIntake }) => {
         <Ionicons name={SvgEnum.Info} style={styles.icon} />
         <Text style={styles.text}>1000 ml = 1 lt</Text>
       </View>
-
-      <H2OButton
-        style={styles.button}
-        rightText="add"
-        textStyle={styles.buttonText}
-        onPress={onPressAdd}
-      />
+      <View style={styles.buttonArea}>
+        <H2OButton
+          style={styles.button}
+          rightText="add"
+          textStyle={styles.buttonText}
+          onPress={onPressAdd}
+        />
+        {onPressScan && (
+          <H2OButton
+            style={{ ...styles.button, ...styles.scanButton }}
+            svg={SvgEnum.Scan}
+            rightText={scanButtonText}
+            iconStyle={styles.scanButtonIcon}
+            onPress={onPressScan}
+          />
+        )}
+      </View>
     </H2OModal>
   );
 };

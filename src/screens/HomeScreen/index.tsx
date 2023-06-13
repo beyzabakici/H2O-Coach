@@ -26,11 +26,13 @@ import {
   AddModal,
   DetailsModal,
   RemoveModal,
+  ScanModal,
   SettingsModal,
 } from "../components";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Footer } from "./components";
 import * as Notifications from "expo-notifications";
+import { BarCodeScanner } from "expo-barcode-scanner";
 
 type Props = {
   route: any;
@@ -56,9 +58,12 @@ const HomeScreen: React.FC<Props> = ({ route, navigation }) => {
   const [detailsModalVisible, setDetailsModalVisible] = useState(false);
   const [removeModalVisible, setRemoveModalVisible] = useState(false);
   const [addModalVisible, setAddModalVisible] = useState(false);
+  const [scanModalVisible, setScanModalVisible] = useState(false);
   const [selectedDayIntakes, setSelectedDayIntakes] = useState<
     IntakeResponseType[]
   >([]);
+  const [scanned, setScanned] = useState<boolean>(null);
+  const [hasPermission, setHasPermission] = useState<any>(null);
   const [goals, setGoals] = useState<GoalsResponseType>(profile);
 
   const dispatch = useAppDispatch();
@@ -186,6 +191,31 @@ const HomeScreen: React.FC<Props> = ({ route, navigation }) => {
     ]);
   };
 
+  const startScan = async () => {
+    // Request camera permission
+    if (!hasPermission) {
+      await (async () => {
+        const { status } = await BarCodeScanner.requestPermissionsAsync();
+        setHasPermission(status === "granted");
+      })();
+    }
+    setAddModalVisible(false);
+
+    const intervalId = setInterval(() => {
+      setScanModalVisible(true);
+      clearInterval(intervalId);
+    }, 1000);
+  };
+
+  useEffect(() => {
+    if (scanned !== null) {
+      if (hasPermission === null)
+        Alert.alert("Requesting for camera permission");
+      if (hasPermission === false) Alert.alert("No access to camera");
+      setAddModalVisible(true);
+    }
+  }, [scanned, hasPermission]);
+
   if (error) {
     errorAlert();
     return <></>;
@@ -248,6 +278,15 @@ const HomeScreen: React.FC<Props> = ({ route, navigation }) => {
           isVisible={addModalVisible}
           setVisible={setAddModalVisible}
           addIntake={addIntakeRequest}
+          onPressScan={startScan}
+          scanButtonText={scanned === null ? "Scan now" : "Scan again"}
+        />
+        <ScanModal
+          isVisible={scanModalVisible}
+          setVisible={setScanModalVisible}
+          scanned={scanned}
+          setScanned={setScanned}
+          onPressAdd={(scannedAmount) => console.log(scannedAmount)}
         />
       </SafeAreaView>
     );
